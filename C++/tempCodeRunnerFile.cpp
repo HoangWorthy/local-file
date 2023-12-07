@@ -1,23 +1,34 @@
 #include <bits/stdc++.h>
-using namespace std;
-void xoamang (string n, int k) {
-    for(int i = k; i < n.length()-1;i++) {
-        n[i] = n[i+1];
-    }
-    n.pop_back();
+#define FOR(i,a,b) for(int i=a;i<b;i++)
+bool songuyento(int n) {
+    if (n == 1) return false;
+    for (int i = 2; i <= sqrt(n)+1; i++)
+    if (n % i == 0) return false;
+    return true;
 }
-int main() {
-    string n;
-    int k,c,min,cc;
-    cin >> n >> k;
-    c,min,cc = 0;
-    do {
-        for (int i = 0;i < n.length();i++) {
-            if (min > stoi(&n[i])) {min = stoi(&n[i]);cc=i;};
-        }
-        xoamang(n,cc);
-        c++;
-
-    } while(c < k);
-    cout << n;
+using namespace std;
+int main()
+{
+    freopen("SEARCH.inp","r",stdin);
+    freopen("SEARCH.out","w",stdout);
+    int m,n,c[100];int r = 0;
+    string k;
+    vector<int> A;
+    cin >> m >> n;
+    FOR(i,m,n+1) {
+        k = to_string(i);
+        reverse(k.begin(),k.end());
+        c[r] = stoi(k);
+        r++;
+    }
+    r = 0;
+    FOR(i,m,n+1) {
+        if (songuyento(c[r])) A.push_back(i);
+        r++;
+    }
+    for (auto i = A.begin();i != A.end();i++) {
+        if (i != A.begin()) cout << "\n";
+        cout << *i;
+    }
+    return 0;
 }

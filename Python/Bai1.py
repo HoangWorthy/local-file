@@ -1,0 +1,13 @@
+# nezi2032004|sevenup7@1234
+# proraz123456789|wukongnopro1803
+# lugia04102002|hieu04102002
+# 1nguoitinh|langtien200511
+# namtrieu_manu|halinh94
+# dauphongtanheo|Tan12345
+# tamnoodlq|tampro0123
+# 0868830052t|Trungle29062004
+# trantuanhvuz|chicken007*
+# Nhokxeko93|ngominhhiep007*
+# pvhuy123bn|cerlb3214
+# cotay313|c26591343
+# luanlaotam16696|vu

@@ -1,23 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void input(int &n) {
-    cin >> n;
-}
-
-long long dequy(int n) {
-    return (n == 0)? 1 : dequy(n-1) * pow(n,n);
-}
-
-void output(long long a) {
-    cout << a;
-}
-
 int main () {
-    freopen("bai4.inp","r",stdin);
-    freopen("bai4.out","w",stdout); 
     int n;
-    input(n);
-    output(dequy(n));
+    cin >> n;
+    int A[n],L[n];
+    for (int i = 0;i < n;i++){
+        cin >> A[i];
+    }
+    for (int i = 0;i < n;i++){
+        L[i] = i+1;
+    }
+    for(int i = 1;i < n;i++){
+        for (int j = 0; j < i; j++){
+            if ((A[j] >= A[i]) || (A[j] < A[j-1])) L[i]--;
+        }
+    }
+    int max = L[0];
+    for (int i = 1;i < n;i++){
+        if (max < L[i]) max = L[i];
+    }
+    cout << max;
     return 0;
 }

@@ -1,34 +1,25 @@
 #include <bits/stdc++.h>
-#define FOR(i,a,b) for(int i=a;i<b;i++)
-bool songuyento(int n) {
-    if (n == 1) return false;
-    for (int i = 2; i <= sqrt(n)+1; i++)
-    if (n % i == 0) return false;
-    return true;
-}
 using namespace std;
-int main()
-{
-    freopen("SEARCH.inp","r",stdin);
-    freopen("SEARCH.out","w",stdout);
-    int m,n,c[100];int r = 0;
-    string k;
-    vector<int> A;
-    cin >> m >> n;
-    FOR(i,m,n+1) {
-        k = to_string(i);
-        reverse(k.begin(),k.end());
-        c[r] = stoi(k);
-        r++;
+
+int main () {
+    int n;
+    cin >> n;
+    int A[n],L[n];
+    for (int i = 0;i < n;i++){
+        cin >> A[i];
     }
-    r = 0;
-    FOR(i,m,n+1) {
-        if (songuyento(c[r])) A.push_back(i);
-        r++;
+    for (int i = 0;i < n;i++){
+        L[i] = i+1;
     }
-    for (auto i = A.begin();i != A.end();i++) {
-        if (i != A.begin()) cout << "\n";
-        cout << *i;
+    for(int i = 1;i < n;i++){
+        for (int j = 0; j < i; j++){
+            if ((A[j] > A[i]) || (A[j] < A[j-1])) L[i]--;
+        }
     }
+    int max = L[0];
+    for (int i = 1;i < n;i++){
+        if (max < L[i]) max = L[i];
+    }
+    cout << max;
     return 0;
 }

@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 
 int main(int argc, char** argv) {
 	float a,b,c,d,x1,x2;
     scanf("%f\n%f\n%f",&a,&b,&c);
+    if (a == 0) {
+        printf("x = %f",-c/b);
+        exit(0);
+    }
     int delta = (b*b)- 4*a*c;
     if (delta > 0) {
         x1 = (-b + sqrt(delta))/(2*a);

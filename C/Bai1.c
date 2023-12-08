@@ -3,9 +3,8 @@
 
 
 int main(int argc, char** argv) {
-	int a,b,c;
-    float x1,x2;
-    scanf("%d\n%d\n%d",&a,&b,&c);
+	float a,b,c,d,x1,x2;
+    scanf("%f\n%f\n%f",&a,&b,&c);
     int delta = (b*b)- 4*a*c;
     if (delta > 0) {
         x1 = (-b + sqrt(delta))/(2*a);

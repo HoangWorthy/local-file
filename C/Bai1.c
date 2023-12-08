@@ -6,8 +6,14 @@
 int main(int argc, char** argv) {
 	float a,b,c,d,x1,x2;
     scanf("%f\n%f\n%f",&a,&b,&c);
-    if (a == 0) {
+    if ((a == 0) && (b!=0) && (c!=0)) {
         printf("x = %f",-c/b);
+        exit(0);
+    } else if ((a == 0) && (b == 0) && (c != 0)) {
+        printf("phuong trinh vo nghiem");
+        exit(0);
+    } else if (a,b,c == 0){
+        printf("phuong trinh co vo so nghiem");
         exit(0);
     }
     int delta = (b*b)- 4*a*c;

@@ -2,30 +2,13 @@
 #include <math.h>
 #include <stdlib.h>
 
+void thaya(int a[]){
+    a[1] = 10;
+}
 
 int main(int argc, char** argv) {
-	float a,b,c,d,x1,x2;
-    scanf("%f\n%f\n%f",&a,&b,&c);
-    if ((a == 0) && (b!=0) && (c!=0)) {
-        printf("x = %f",-c/b);
-        exit(0);
-    } else if ((a == 0) && (b == 0) && (c != 0)) {
-        printf("phuong trinh vo nghiem");
-        exit(0);
-    } else if (a,b,c == 0){
-        printf("phuong trinh co vo so nghiem");
-        exit(0);
-    }
-    int delta = (b*b)- 4*a*c;
-    if (delta > 0) {
-        x1 = (-b + sqrt(delta))/(2*a);
-        x2 = (-b - sqrt(delta))/(2*a);
-        printf("x1 = %f\nx2 =%f",x1,x2);
-    }
-    else if (delta == 0) {
-        x1 = -b /(2*a);
-        printf("x1 = x2 = %f",x1);
-    }
-    else printf("Phuong trinh vo nghiem");
+	int a[5] = {1,2,3,4,5};
+    thaya(a);
+    printf("%d",a[1]);
 	return 0;
 }

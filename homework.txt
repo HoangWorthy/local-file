@@ -1,1 +1,6 @@
 MAE làm bài 9 -> 13
+def sin(x,n)
+sin(1,3)...
+Khai triển taylor
+1/ Vẽ hình
+2/ Tính đạo hàm

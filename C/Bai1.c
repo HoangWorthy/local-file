@@ -1,14 +1,26 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-
-void thaya(int a[]){
-    a[1] = 10;
-}
+#include <stdbool.h>
 
 int main(int argc, char** argv) {
-	int a[5] = {1,2,3,4,5};
-    thaya(a);
-    printf("%d",a[1]);
-	return 0;
+    int a,d;
+    int k;
+    int c = 0 ;
+    int p = 0;
+	 printf("Type a binary number you want to convert to decimal: ");
+   				 scanf("%d",&a);
+    			while (a != 0){
+        				k = a % 10;
+                        printf("%d\n",k);
+        				if (k != 1 && k != 0) {
+            			    p = 1;
+           			         break;
+      					  }
+        				a = a / 10;
+       				 d += k*pow(2,c);
+        			c++;
+    }
+    if (p == 0) printf("%d is decimal number after convertion\n",d);
+    else printf("asda");
 }

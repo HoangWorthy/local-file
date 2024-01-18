@@ -1,3 +1,6 @@
+//Note: Recheck the getdatabase() function
+
+
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
@@ -12,14 +15,15 @@ struct sinhvien
 };
 struct accounts
 {
+    char name[30];
     char username[20];
     char passowrd[20];
-    char perm[1];
+    char perm[2];
 };
 FILE *fp;
 int l = 0;
 int line = 0;
-char perm[1];
+char perm[2];
 typedef struct sinhvien sv;
 typedef struct accounts acc;
 
@@ -43,6 +47,8 @@ void login(acc all[])
             c = true;
             k++;
             strcpy(perm,all[i].perm);
+            perm[strcspn(perm,"\n")] = '\0';
+            printf("Welcome %s\n",all[i].name);
             break;
             }
         }
@@ -55,7 +61,7 @@ void registers(acc all[])
 {
     int i;
     bool c = false;
-    char a[20],b[20];
+    char a[20],b[20],d[20];
     while(true){
         c = false;
         fgets(a,sizeof(a),stdin);
@@ -75,14 +81,18 @@ void registers(acc all[])
         if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
         else printf("Wrong input! Please retry\n");
     }
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-2\n",a,b);
-    fclose(fp);
     printf("Successful\n");
+    printf("Please enter your name: ");
+    fgets(d,sizeof(d),stdin);
+    d[strcspn(d,"\n")] = '\0';
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-2\n",d,a,b);
+    fclose(fp);
+    strcpy(perm,"2");
 }
 void stringProcessing2(acc all[], char c[], int line)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]",all[line].username,all[line].passowrd,all[line].perm);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].name,all[line].username,all[line].passowrd,all[line].perm);
 }
 
 void getUserAccounts(acc all[])
@@ -95,7 +105,7 @@ void getUserAccounts(acc all[])
         line++;
     }
     fclose(fp);
-    //printf("%s-%s-%s",all[1].username,all[1].passowrd,all[1].perm);
+    printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].passowrd,all[1].perm);
 }
 
 void addSV(sv a[])
@@ -118,7 +128,7 @@ void addSV(sv a[])
 
 void stringProcessing1(char c[],sv r[], int l)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]",r[l].id,r[l].name,r[l].semester,r[l].coursename);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].id,r[l].name,r[l].semester,r[l].coursename);
 }
 
 void getDatabase(sv r[])
@@ -140,8 +150,8 @@ void search(sv r[])
     char c[100];
     int i;
     char o;
-    scanf("%d",&o);
-    scanf("%s",&c);
+    scanf(" %s",&o);
+    scanf(" %s",&c);
     switch(o){
         case '1': {
             for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
@@ -240,84 +250,69 @@ int main()
     sv a[100];
     sv r[100];
     acc all[100];
-    char lg;
-    char o;
-    scanf("%s",&lg);
-    switch (lg)
-    {
-        case '1':
-            getUserAccounts(all);
-            login(all);
-            break;
-        case '2':
-            registers(all);
-            getUserAccounts(all);
-            break;
-        default:
-            break;
-    }
-    while(perm == "2"){
-        scanf("%s",&o);
-        switch (o)
-        {
-        case '1':
-            search(r);
-            break;
-        case '2':
-            exit(1);
-        }
-    }
-    while(perm == "1"){
-        scanf("%s",&o);
-        switch (o)
-        {
-        case '1':
-            search(r);
-            break;
-        case '2':
-            report(r);
-            break;
-        case '3':
-            exit(1);
-        }
-    }
-    /*while(true){
-        scanf("%s",&o);
-        getDatabase(r);
-        switch (o)
-        {
-            case '1':{
-                addSV(a);
-                getDatabase(r);
-                break;
-            }
-            case '2':{
-                search(r);
-                break;
-            }
-            case '3':{
-                update(r);
-                delete(r);
-                getDatabase(r);
-                break;
-            }
-            case '4':{
-                report(r);
-                break;
-            }
-            case '5':
-                exit(1);
-        }
-        return 0;
-    }*/
-    // addSV(a);
+    getUserAccounts(all);
+    // char lg;
+    // scanf("%s",&lg);
+    // getchar();
+    // switch (lg)
+    // {
+    //     case '1':{
+    //         getUserAccounts(all);
+    //         login(all);
+    //         break;
+    //     }
+    //     case '2':{
+    //         registers(all);
+    //         getUserAccounts(all);
+    //         break;
+    //     }
+    // }
     // getDatabase(r);
-    // search(r);
-    // update(r);
-    // delete(r);
-    // getDatabase(r);
-    // report(r);
-    //getUserAccounts(all);
-    //login(all);
-    //registers(all);
+    // char o;
+    // while(strcmp(perm,"2") == 0){
+    //     o = getchar();
+    //     switch (o)
+    //     {
+    //     case '1':
+    //         search(r);
+    //         break;
+    //     case '2':
+    //         exit(1);
+    //     }
+    // }
+    // while(strcmp(perm,"1") == 0){
+    //     o = getchar();
+    //     switch (o)
+    //     {
+    //         case '1':
+    //             search(r);
+    //             break;
+    //         case '2':
+    //             report(r);
+    //             break;
+    //         case '3':
+    //             exit(1);
+    //     }
+    // }
+    // while(strcmp(perm,"0") == 0){
+    //     o = getchar();
+    //     switch (o)
+    //     {
+    //         case '1':
+    //             addSV(a);
+    //             break;
+    //         case '2':
+    //             update(r);
+    //             break;
+    //         case '3':
+    //             delete(r);
+    //             break;
+    //         case '4':
+    //             search(r);
+    //             break;
+    //         case '5':
+    //             report(r);
+    //             break;
+    //     }
+    // }
 }

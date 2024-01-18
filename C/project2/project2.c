@@ -24,13 +24,15 @@ typedef struct accounts acc;
 
 bool checkValid(char a[], char b[])
 {
-
+    char c;
+    sscanf(c,"%1[ ]",a);
+    if (c == ' ') 
 }
 
 void registers()
 {
     char a[20],b[20];
-    while(!checkValid()){
+    while(!checkValid(a,b)){
         fgets(a,sizeof(a),stdin);
         if (a[strlen(a)-1] == "\n") a[strlen(a)-1] = "\0";
         fgets(b,sizeof(b),stdin);

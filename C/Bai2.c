@@ -1,11 +1,17 @@
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
 
+int main() {
+    int num;
+    char ch;
 
-int main(int argc, char** argv) {
-    char a[100];
-    scanf("%s",&a);
-    int b = atoi(a);
-    printf("%d",b);
+    printf("Enter a number: ");
+    scanf("%d", &num);
+
+    // The newline character from the previous input is still in the buffer
+    printf("Enter a character: ");
+    scanf("%c", &ch);  // Notice the space before %c, which skips leading whitespace
+
+    printf("You entered: %d and %c\n", num, ch);
+
+    return 0;
 }

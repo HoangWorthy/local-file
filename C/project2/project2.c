@@ -22,25 +22,18 @@ int line = 0;
 typedef struct sinhvien sv;
 typedef struct accounts acc;
 
-bool checkValid(char a[], char b[])
-{
-    char c;
-    sscanf(c,"%1[ ]",a);
-    if (c == ' ') 
-}
 
 void registers()
 {
     char a[20],b[20];
-    while(!checkValid(a,b)){
+    while(true){
         fgets(a,sizeof(a),stdin);
-        if (a[strlen(a)-1] == "\n") a[strlen(a)-1] = "\0";
         fgets(b,sizeof(b),stdin);
-        if (b[strlen(b)-1] == "\n") b[strlen(b)-1] = "\0";
-        checkValid(a,b);
+        if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
+        else printf("Wrong input! Please retry\n");
     }
-}
 
+}
 void stringProcessing2(acc all[], char c[], int line)
 {
     sscanf(c,"%[^-]-%[^-]-%[^-]",all[line].username,all[line].passowrd,all[line].perm);
@@ -238,5 +231,6 @@ int main()
     // delete(r);
     // getDatabase(r);
     // report(r);
-    getUserAccounts(all);
+    //getUserAccounts(all);
+    registers();
 }

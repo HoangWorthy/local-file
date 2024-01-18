@@ -14,25 +14,71 @@ struct accounts
 {
     char username[20];
     char passowrd[20];
-    char perm[10];
+    char perm[1];
 };
 FILE *fp;
 int l = 0;
 int line = 0;
+char perm[1];
 typedef struct sinhvien sv;
 typedef struct accounts acc;
 
-
-void registers()
+void login(acc all[])
 {
     char a[20],b[20];
-    while(true){
+    int i;
+    int k = 0;
+    bool c = false;
+    while(!c){
         fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0'; 
         fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        for(i = 0;i < line;i++){ 
+            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) != 0){
+                printf("Wrong password!\n");
+                k++;
+            }
+            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) == 0){
+            c = true;
+            k++;
+            strcpy(perm,all[i].perm);
+            break;
+            }
+        }
+        if (k == 0) printf("There is no account with that username\n");
+        k = 0;
+    }
+}
+
+void registers(acc all[])
+{
+    int i;
+    bool c = false;
+    char a[20],b[20];
+    while(true){
+        c = false;
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0'; 
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        if (strcmp(a,b) == 0) {
+            printf("Username cannot match the password\n");
+            continue;
+        }
+        for(i = 0;i < line;i++) if(strcmp(a,all[i].username)==0){
+            printf("Username occupied\n");
+            c = true;
+            break;
+        }
+        if (c) continue;
         if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
         else printf("Wrong input! Please retry\n");
     }
-
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-2\n",a,b);
+    fclose(fp);
+    printf("Successful\n");
 }
 void stringProcessing2(acc all[], char c[], int line)
 {
@@ -49,7 +95,7 @@ void getUserAccounts(acc all[])
         line++;
     }
     fclose(fp);
-    printf("%s-%s-%s",all[0].username,all[0].passowrd,all[0].perm);
+    //printf("%s-%s-%s",all[1].username,all[1].passowrd,all[1].perm);
 }
 
 void addSV(sv a[])
@@ -194,7 +240,47 @@ int main()
     sv a[100];
     sv r[100];
     acc all[100];
-    // char o;
+    char lg;
+    char o;
+    scanf("%s",&lg);
+    switch (lg)
+    {
+        case '1':
+            getUserAccounts(all);
+            login(all);
+            break;
+        case '2':
+            registers(all);
+            getUserAccounts(all);
+            break;
+        default:
+            break;
+    }
+    while(perm == "2"){
+        scanf("%s",&o);
+        switch (o)
+        {
+        case '1':
+            search(r);
+            break;
+        case '2':
+            exit(1);
+        }
+    }
+    while(perm == "1"){
+        scanf("%s",&o);
+        switch (o)
+        {
+        case '1':
+            search(r);
+            break;
+        case '2':
+            report(r);
+            break;
+        case '3':
+            exit(1);
+        }
+    }
     /*while(true){
         scanf("%s",&o);
         getDatabase(r);
@@ -232,5 +318,6 @@ int main()
     // getDatabase(r);
     // report(r);
     //getUserAccounts(all);
-    registers();
+    //login(all);
+    //registers(all);
 }

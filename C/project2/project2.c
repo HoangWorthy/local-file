@@ -1,5 +1,6 @@
-//Note: Recheck the getdatabase() function
-
+//Note:
+// Add menu.
+// Add functions that catch input error.
 
 #include<stdio.h>
 #include<conio.h>

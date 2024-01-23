@@ -1,2 +1,3 @@
 SE193626-Dang Minh Hoang-1-DOTNET
-SE193627-Dang Quang Huy-3-DOTNET
+SE193627-Dang Quang Huy-2-DOTNET
+SE123456-Tran Anh Tien-1-.NET

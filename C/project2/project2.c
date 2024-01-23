@@ -1,4 +1,3 @@
-//Note: Recheck the getdatabase() function
 
 
 #include<stdio.h>
@@ -250,7 +249,7 @@ int main()
     sv a[100];
     sv r[100];
     acc all[100];
-    getUserAccounts(all);
+    printf("");
     // char lg;
     // scanf("%s",&lg);
     // getchar();

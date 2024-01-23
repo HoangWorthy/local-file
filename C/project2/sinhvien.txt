@@ -1,3 +1,2 @@
 SE193626-Dang Minh Hoang-1-DOTNET
-SE193727-Dang Quang Huy-3-DOTNET
-SE123456-Tran Tuong Van-2-JAVA
+SE193627-Dang Quang Huy-3-DOTNET

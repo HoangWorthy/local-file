@@ -1,3 +1,4 @@
+//Note: Recheck the getdatabase() function
 
 
 #include<stdio.h>
@@ -25,6 +26,22 @@ int line = 0;
 char perm[2];
 typedef struct sinhvien sv;
 typedef struct accounts acc;
+
+void createAcc()
+{
+    char d[30],a[30],b[30],s[10];
+    fgets(d,sizeof(d),stdin);
+    d[strcspn(d,"\n")] = '\0';
+    fgets(d,sizeof(d),stdin);
+    a[strcspn(a,"\n")] = '\0';
+    fgets(b,sizeof(b),stdin);
+    b[strcspn(b,"\n")] = '\0';
+    fgets(s,sizeof(s),stdin);
+    s[strcspn(s,"\n")] = '\0';
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
+    fclose(fp);
+}
 
 void login(acc all[])
 {
@@ -149,8 +166,8 @@ void search(sv r[])
     char c[100];
     int i;
     char o;
-    scanf(" %s",&o);
-    scanf(" %s",&c);
+    scanf("%s",&o);
+    scanf("%s",&c);
     switch(o){
         case '1': {
             for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
@@ -168,6 +185,8 @@ void search(sv r[])
             for(i = 0;i < l;i++) if (strcmp(r[i].coursename,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
             break;
         }
+        default:
+            printf("Wrong!");
     }
 }
 
@@ -217,7 +236,7 @@ void update(sv r[])
     }
     fp = fopen("sinhvien.txt","w");
     for(i = 0; i < l; i++){
-        fprintf(fp,"%s-%s-%s-%s",r[i].id,r[i].name,r[i].semester,r[i].coursename);
+        fprintf(fp,"%s-%s-%s-%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename);
     }
     fclose(fp);
 }
@@ -230,7 +249,7 @@ void delete(sv r[])
     fp = fopen("sinhvien.txt","w");
     for(i = 0; i < l; i++){
         if (strcmp(r[i].id,id) == 0) continue;
-        fprintf(fp,"%s-%s-%s-%s",r[i].id,r[i].name,r[i].semester,r[i].coursename);
+        fprintf(fp,"%s-%s-%s-%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename);
     }
     l--;
     fclose(fp);
@@ -240,7 +259,7 @@ void report(sv r[])
 {
     int i;
     for(i = 0; i < l; i++){
-        printf("%s | %s | %s | %s",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+        printf("%s | %s | %s | %s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
     }
 }
 
@@ -249,7 +268,7 @@ int main()
     sv a[100];
     sv r[100];
     acc all[100];
-    printf("");
+    getUserAccounts(all);
     // char lg;
     // scanf("%s",&lg);
     // getchar();

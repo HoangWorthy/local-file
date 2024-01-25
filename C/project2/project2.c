@@ -1,20 +1,27 @@
-//Note:
-// 1.Check char o, it's gonna run the switch if o = 12 or o = 13...
+//Note: Add clearscreen last.
+// 1.Check char o, it's gonna run the switch if o = 12 or o = 13... It should be fixed by switching switch to if else.
 // 2.Fix the login and register, username should be all downcase. Should add validation.
 // 3.Looping and exiting the loop in login and register and also other functions can retry it.
 // 4.Add classes into the program.
+// 5.User still have access to the register function, add ID columm to user.data, link the account info from student.data with user.data. 
+// 6.Recheck the whole login/register function
+// 7.Add logout function
+// 8.Change permission of the teacher,admin and students
+// 9.Finish the modifyclass function
+// 10.Add teacher.data
+// 11.Draw a database relationship diagram
 
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<stdbool.h>
-struct class{
+struct classdata{
     char name[20];
     char teacher[20];
     char students[500];
 };
-struct sinhvien
+struct student
 {
     char id[10];
     char name[50];
@@ -23,7 +30,7 @@ struct sinhvien
 };
 struct accounts
 {
-    char name[30];
+    char id[30];
     char username[20];
     char passowrd[20];
     char perm[2];
@@ -31,117 +38,14 @@ struct accounts
 FILE *fp;
 int l = 0;
 int line = 0;
+int cline = 0;
 char perm[2];
-typedef struct sinhvien sv;
+typedef struct classdata cl;
+typedef struct student sv;
 typedef struct accounts acc;
 
-void createAcc()
-{
-    char d[30],a[30],b[30],s[10];
-    fgets(d,sizeof(d),stdin);
-    d[strcspn(d,"\n")] = '\0';
-    fgets(d,sizeof(d),stdin);
-    a[strcspn(a,"\n")] = '\0';
-    fgets(b,sizeof(b),stdin);
-    b[strcspn(b,"\n")] = '\0';
-    fgets(s,sizeof(s),stdin);
-    s[strcspn(s,"\n")] = '\0';
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
-    fclose(fp);
-}
-
-void login(acc all[])
-{
-    char a[20],b[20];
-    int i;
-    int k = 0;
-    bool c = false;
-    while(!c){
-        printf("Username: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0';
-        printf("Password: ");
-        fgets(b,sizeof(b),stdin);
-        b[strcspn(b,"\n")] = '\0';
-        for(i = 0;i < line;i++){ 
-            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) != 0){
-                printf("Wrong password!\n");
-                k++;
-            }
-            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) == 0){
-            c = true;
-            k++;
-            strcpy(perm,all[i].perm);
-            perm[strcspn(perm,"\n")] = '\0';
-            printf("Welcome %s to the program\n",all[i].name);
-            break;
-            }
-        }
-        if (k == 0) printf("There is no account with that username\n");
-        k = 0;
-    }
-}
-
-void registers(acc all[])
-{
-    int i;
-    bool c = false;
-    char a[20],b[20],d[20],s[20];
-    while(true){
-        c = false;
-        printf("Username: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0'; 
-        printf("Password: ");
-        fgets(b,sizeof(b),stdin);
-        b[strcspn(b,"\n")] = '\0';
-        printf("Retype password: ");
-        fgets(s,sizeof(s),stdin);
-        s[strcspn(s,"\n")] = '\0';
-        if (strcmp(b,s) != 0){
-            printf("Password does not match. Please retype\n");
-            continue;
-        }
-        if (strcmp(a,b) == 0) {
-            printf("Username cannot match the password\n");
-            continue;
-        }
-        for(i = 0;i < line;i++) if(strcmp(a,all[i].username)==0){
-            printf("Username occupied\n");
-            c = true;
-            break;
-        }
-        if (c) continue;
-        if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
-        else printf("Wrong input! Please retry\n");
-    }
-    printf("Successful\n");
-    printf("Please enter your name: ");
-    fgets(d,sizeof(d),stdin);
-    d[strcspn(d,"\n")] = '\0';
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-%s-2\n",d,a,b);
-    fclose(fp);
-    strcpy(perm,"2");
-}
-void stringProcessing2(acc all[], char c[], int line)
-{
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].name,all[line].username,all[line].passowrd,all[line].perm);
-}
-
-void getUserAccounts(acc all[])
-{
-    char c[100];
-    fp = fopen("user.data","r");
-    while (fgets(c,sizeof(c),fp) != NULL)
-    {
-        stringProcessing2(all,c,line);
-        line++;
-    }
-    fclose(fp);
-    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].passowrd,all[1].perm);
-}
+//------------------------------------------------------------------------------------------------------------------------
+//                                                       Students functions
 
 void addSV(sv a[], sv r[])
 {
@@ -149,7 +53,7 @@ void addSV(sv a[], sv r[])
     int p = 1;
     printf("Number of new students: ");
     scanf("%d",&q);
-    fp = fopen("sinhvien.txt","a");
+    fp = fopen("student.data","a");
     int i,j;
     for(i = 0;i < q;i++){
         while(p != 0){
@@ -184,7 +88,7 @@ void stringProcessing1(char c[],sv r[], int l)
 
 void getDatabase(sv r[])
 {
-    fp = fopen("sinhvien.txt","r");
+    fp = fopen("student.data","r");
     char c[100];
     int i,j;
     while(fgets(c,sizeof(c),fp)!= NULL){
@@ -301,7 +205,7 @@ void update(sv r[])
             break;
         }
     }
-    fp = fopen("sinhvien.txt","w");
+    fp = fopen("student.data","w");
     for(i = 0; i < l; i++){
         fprintf(fp,"%s-%s-%s-%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename);
     }
@@ -315,7 +219,7 @@ void delete(sv r[])
     char id[10];
     printf("Type ID: ");
     scanf("%s",&id);
-    fp = fopen("sinhvien.txt","w");
+    fp = fopen("student.data","w");
     for(i = 0; i < l; i++){
         if (strcmp(r[i].id,id) == 0) continue;
         fprintf(fp,"%s-%s-%s-%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename);
@@ -333,93 +237,304 @@ void report(sv r[])
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------------
+//                                                     Login/register functions
+
+void createAcc()
+{
+    char d[30],a[30],b[30],s[10];
+    fgets(d,sizeof(d),stdin);
+    d[strcspn(d,"\n")] = '\0';
+    fgets(d,sizeof(d),stdin);
+    a[strcspn(a,"\n")] = '\0';
+    fgets(b,sizeof(b),stdin);
+    b[strcspn(b,"\n")] = '\0';
+    fgets(s,sizeof(s),stdin);
+    s[strcspn(s,"\n")] = '\0';
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
+    fclose(fp);
+}
+
+void stringProcessing2(acc all[], char c[], int line)
+{
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].passowrd,all[line].perm);
+}
+
+void getUserAccounts(acc all[])
+{
+    char c[100];
+    fp = fopen("user.data","r");
+    while (fgets(c,sizeof(c),fp) != NULL)
+    {
+        stringProcessing2(all,c,line);
+        line++;
+    }
+    fclose(fp);
+    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].passowrd,all[1].perm);
+}
+
+void welcome(acc all[], int i, sv r[])
+{
+    int j;
+    for(j = 0;j < l;j++) if (strcmp(all[i].id,r[j].id) == 0){
+        printf("Welcome %s to the program\n",r[j].id);
+        break;
+    }
+}
+
+void login(acc all[],sv r[])
+{
+    char a[20],b[20];
+    int i;
+    int k = 0;
+    bool c = false;
+    while(!c){
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0';
+        printf("Password: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        for(i = 0;i < line;i++){ 
+            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) != 0){
+                printf("Wrong password!\n");
+                k++;
+            }
+            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) == 0){
+            c = true;
+            k++;
+            strcpy(perm,all[i].perm);
+            perm[strcspn(perm,"\n")] = '\0';
+            welcome(all,i,r);
+            break;
+            }
+        }
+        if (k == 0) printf("There is no account with that username\n");
+        k = 0;
+    }
+}
+
+bool checkOccuppied(char d[], acc all[])
+{
+    int i;
+    for (i = 0;i < line;i++) if (strcmp(d,all[i].id) == 0) return true;
+}
+
+void registers(acc all[])
+{
+    int i;
+    bool c = false;
+    char a[20],b[20],d[20],s[20];
+    while(true){
+        c = false;
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0'; 
+        printf("Password: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        printf("Retype password: ");
+        fgets(s,sizeof(s),stdin);
+        s[strcspn(s,"\n")] = '\0';
+        if (strcmp(b,s) != 0){
+            printf("Password does not match. Please retype\n");
+            continue;
+        }
+        if (strcmp(a,b) == 0) {
+            printf("Username cannot match the password\n");
+            continue;
+        }
+        for(i = 0;i < line;i++) if(strcmp(a,all[i].username)==0){
+            printf("Username occupied\n");
+            c = true;
+            break;
+        }
+        if (c) continue;
+        if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
+        else printf("Wrong input! Please retry\n");
+    }
+    printf("Successful\n");
+    printf("Please enter your ID: ");
+    while(fgets(d,sizeof(d),stdin)){
+        d[strcspn(d,"\n")] = '\0';
+        if (checkOccuppied(d,all)){
+            printf("There's already a user with ID %s. Please retry!\n",d);
+            continue;
+        }
+        else {
+            printf("Please enter your ID: ");
+            break;
+        }
+    }
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-2\n",d,a,b);
+    fclose(fp);
+    strcpy(perm,"2");
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//                                                       Class functions
+
+void stringProcessing3(char c[], cl class[], int cline)
+{
+    sscanf(c,"%[^-]-%[^-]-%[^-\n]",class[cline].name,class[cline].teacher,class[cline].students);
+}
+
+void getClassData(cl class[])
+{
+    fp = fopen("class.data","r");
+    char c[100];
+    int i,j;
+    while(fgets(c,sizeof(c),fp)!= NULL){
+        stringProcessing3(c,class,cline);
+        cline++;
+    }
+    fclose(fp);
+    //printf("%s-%s-%s",class[0].name,class[0].teacher,class[0].students);
+}
+
+void addClass()
+{
+
+}
+
+void printStudents(cl class[], int i, sv r[])
+{
+    int j;
+    char *token = strtok(class[i].students,".");
+    while (token != NULL)
+    {
+        for(j = 0;j < l;j++) if (strcmp(r[j].id,token)==0) printf("%s|%s|%s|%s\n",r[j].id,r[j].name,r[j].semester,r[j].coursename); 
+        token = strtok(NULL,".");
+    }
+    
+}
+
+void printClass(cl class[], sv r[])
+{
+    int i;
+    for(i = 0;i < cline;i++){
+        printf("Class: %s\nTeacher name: %s\nStudents: \n",class[i].name,class[i].teacher);
+        printStudents(class,i,r);
+    }
+}
+
+void deleteStudents()
+{
+
+}
+
+void addStudents()
+{
+
+}
+
+void modifyClass()
+{
+    // Show all classes || search by class name and teacher name.
+}
+
+void deleteClass()
+{
+    // Show all classes || search by class name and teacher name.
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//                                                       Main function
+
+
 int main()
 {
+    cl class[100];
     sv a[100];
     sv r[100];
     acc all[100];
-    char lg;
-    scanf("%s",&lg);
-    getchar();
-    switch (lg)
-    {
-        case '1':{
-            getUserAccounts(all);
-            login(all);
-            break;
-        }
-        case '2':{
-            registers(all);
-            getUserAccounts(all);
-            break;
-        }
-    }
     getDatabase(r);
-    char o;
-    while(strcmp(perm,"2") == 0){
-        printf("1. Search\n");
-        printf("2. Exit\n");
-        scanf("%s",&o);
-        switch (o)
-        {
-        case '1':
-            search(r);
-            break;
-        case '2':
-            exit(1);
-        }
-    }
-    while(strcmp(perm,"1") == 0){
-        printf("1. Search\n");
-        printf("1. Report\n");
-        printf("3. Exit\n");
-        scanf("%s",&o);
-        switch (o)
-        {
-            case '1':
-                search(r);
-                break;
-            case '2':
-                report(r);
-                break;
-            case '3':
-                exit(1);
-        }
-    }
-    while(strcmp(perm,"0") == 0){
-        printf("1. Add more students\n");
-        printf("2. Update students\n");
-        printf("3. Delete students\n");
-        printf("4. Search students\n");
-        printf("5. Student reports\n");
-        printf("6. Create accounts\n");
-        printf("7. Exit\n");
-        scanf("%s",&o);
-        switch (o)
-        {
-            case '1':
-                addSV(a,r);
-                getDatabase(r);
-                break;
-            case '2':
-                update(r);
-                getDatabase(r);
-                break;
-            case '3':
-                delete(r);
-                getDatabase(r);
-                break;
-            case '4':
-                search(r);
-                break;
-            case '5':
-                report(r);
-                break;
-            case '6':
-                createAcc();
-                break;
-            case '7':
-                exit(1);
-        }
-    }
+    getClassData(class);
+    printClass(class,r);
+//     char lg;
+//     scanf("%s",&lg);
+//     getchar();
+//     switch (lg)
+//     {
+//         case '1':{
+//             getUserAccounts(all);
+//             login(all);
+//             break;
+//         }
+//         case '2':{
+//             registers(all);
+//             getUserAccounts(all);
+//             break;
+//         }
+//     }
+//     getDatabase(r);
+//     char o;
+//     while(strcmp(perm,"2") == 0){
+//         printf("1. Search\n");
+//         printf("2. Exit\n");
+//         scanf("%s",&o);
+//         switch (o)
+//         {
+//         case '1':
+//             search(r);
+//             break;
+//         case '2':
+//             exit(1);
+//         }
+//     }
+//     while(strcmp(perm,"1") == 0){
+//         printf("1. Search\n");
+//         printf("1. Report\n");
+//         printf("3. Exit\n");
+//         scanf("%s",&o);
+//         switch (o)
+//         {
+//             case '1':
+//                 search(r);
+//                 break;
+//             case '2':
+//                 report(r);
+//                 break;
+//             case '3':
+//                 exit(1);
+//         }
+//     }
+//     while(strcmp(perm,"0") == 0){
+//         printf("1. Add more students\n");
+//         printf("2. Update students\n");
+//         printf("3. Delete students\n");
+//         printf("4. Search students\n");
+//         printf("5. Student reports\n");
+//         printf("6. Create accounts\n");
+//         printf("7. Exit\n");
+//         scanf("%s",&o);
+//         switch (o)
+//         {
+//             case '1':
+//                 addSV(a,r);
+//                 getDatabase(r);
+//                 break;
+//             case '2':
+//                 update(r);
+//                 getDatabase(r);
+//                 break;
+//             case '3':
+//                 delete(r);
+//                 getDatabase(r);
+//                 break;
+//             case '4':
+//                 search(r);
+//                 break;
+//             case '5':
+//                 report(r);
+//                 break;
+//             case '6':
+//                 createAcc();
+//                 break;
+//             case '7':
+//                 exit(1);
+//         }
+//     }
 }

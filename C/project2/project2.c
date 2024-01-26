@@ -21,6 +21,12 @@ struct classdata{
     char teacher[20];
     char students[500];
 };
+struct teacher{
+    char sname[20];
+    char name[30];
+    char email[50];
+};
+
 struct student
 {
     char id[10];
@@ -43,9 +49,33 @@ char perm[2];
 typedef struct classdata cl;
 typedef struct student sv;
 typedef struct accounts acc;
+typedef struct teacher tea;
 
 //------------------------------------------------------------------------------------------------------------------------
-//                                                       Students functions
+//                                                       Teacher functions
+
+void addTeacher()
+{
+
+}
+
+void removeTeacher()
+{
+
+}
+
+void printTeacherProfiles()
+{
+
+}
+
+void printTeacherClasses()
+{
+    
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//                                                       Student functions
 
 void addSV(sv a[], sv r[])
 {
@@ -153,7 +183,6 @@ void update(sv r[])
     printf("2. Update Name\n");
     printf("3. Update Semester\n");
     printf("4. Update Course name\n");
-    printf("5. Update All\n");
     scanf("%s",&o);
     printf("Type ID: ");
     scanf("%s",&c);
@@ -186,22 +215,6 @@ void update(sv r[])
             printf("Type Updated Course name: ");
             scanf("%s",&a);
             strcpy(r[k].coursename,a);
-            break;
-        }
-        case '5':{
-            char x[10],b[10],d[10],e[10];
-            printf("Type Updated ID: ");
-            scanf("%s",&x);
-            strcpy(r[k].id,x);
-            printf("Type Updated Name: ");
-            scanf("%s",&b);
-            strcpy(r[k].name,b);
-            printf("Type Updated Semester: ");
-            scanf("%s",&d);
-            strcpy(r[k].semester,d);
-            printf("Type Updated Course name: ");
-            scanf("%s",&e);
-            strcpy(r[k].coursename,e);
             break;
         }
     }
@@ -475,9 +488,10 @@ void modifyClass(cl class[])
     } while (strcmp(o,"1") != 0 && (strcmp(o,"2") != 0));
 }
 
-void addClass()
+void addClass(sv r[])
 {
-    int i,n;
+    int i,n,j;
+    bool p;
     char a[20],b[20],c[100],d[20];
     strcpy(c,"\0");
     scanf("%s",a);
@@ -485,8 +499,15 @@ void addClass()
     //Check if there exist the teacher name in teacher.data
     scanf("%d",&n);
     for(i = 0;i < n;i++){
-        scanf("%s",d);
-        strcat(c,d);
+        do
+        {
+            scanf("%s",d);
+            for(j = 0;j < l; j++) {
+                if (strcmp(d,r[j].id) == 0) {p = true;break;}
+            }
+            if (!p) printf("ID not found. Please retry!\n");
+        } while (!p);
+            strcat(c,d);
         if(i!=n-1) strcat(c,".");
     }
     fp = fopen("class.data","a");
@@ -521,9 +542,10 @@ int main()
     sv r[100];
     acc all[100];
     getDatabase(r);
+    //addClass(r);
     getClassData(class);
-    deleteClass(class);
-    //printClass(class,r);
+   // deleteClass(class);
+    printClass(class,r);
 //     char lg;
 //     scanf("%s",&lg);
 //     getchar();

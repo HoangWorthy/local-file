@@ -394,10 +394,6 @@ void getClassData(cl class[])
     //printf("%s-%s-%s",class[0].name,class[0].teacher,class[0].students);
 }
 
-void addClass()
-{
-
-}
 
 void printStudents(cl class[], int i, sv r[])
 {
@@ -415,29 +411,103 @@ void printClass(cl class[], sv r[])
 {
     int i;
     for(i = 0;i < cline;i++){
-        printf("Class: %s\nTeacher name: %s\nStudents: \n",class[i].name,class[i].teacher);
+        printf("Class: %s\nTeacher : %s\nStudents: \n",class[i].name,class[i].teacher);
         printStudents(class,i,r);
     }
 }
 
-void deleteStudents()
+void printClassToFile(cl class[])
 {
-
+    int i;
+    fp = fopen("class.data","w");
+    for(i = 0;i < cline;i++) fprintf(fp,"%s-%s-%s\n",class[i].name,class[i].teacher,class[i].students);
+    fclose(fp);
 }
 
-void addStudents()
+void addStudents(cl class[], int k)
 {
-
+    int n,i;
+    char c[20];
+    scanf("%d",&n);
+    for(i = 0;i < n;i++){
+        scanf("%s",c);
+        strcat(class[k].students,".");
+        strcat(class[k].students,c);
+    }
+    printClassToFile(class);
 }
 
-void modifyClass()
+void deleteStudents(cl class[], int k)
+{
+    cl new;
+    strcpy(new.students,"\0");
+    char c[20];
+    int i;
+    scanf("%s",&c);
+    char *token = strtok(class[k].students,".");
+    while(token != NULL){
+        if (strcmp(token,c) == 0) {token = strtok(NULL,".");continue;}
+        strcat(new.students,token);
+        token = strtok(NULL,".");
+        if (token!= NULL) strcat(new.students,".");
+    }
+    strcpy(class[k].students,new.students);
+    printClassToFile(class);
+}
+
+void modifyClass(cl class[])
 {
     // Show all classes || search by class name and teacher name.
+    int i,k;
+    char c[50],d[50],o[5];
+    scanf("%s",&c);
+    scanf("%s",&d);
+    for(i = 0;i < cline;i++) if (strcmp(c,class[i].name) == 0 && strcmp(d,class[i].teacher) == 0) {k = i;break;}
+    do {
+    scanf("%s",&o);
+    if (strcmp(o,"1") == 0) {
+        addStudents(class,k);
+    }
+    else if (strcmp(o,"2") == 0) {
+        deleteStudents(class,k);
+    }
+    else printf("Wrong input!");
+    } while (strcmp(o,"1") != 0 && (strcmp(o,"2") != 0));
 }
 
-void deleteClass()
+void addClass()
 {
-    // Show all classes || search by class name and teacher name.
+    int i,n;
+    char a[20],b[20],c[100],d[20];
+    strcpy(c,"\0");
+    scanf("%s",a);
+    scanf("%s",b);
+    //Check if there exist the teacher name in teacher.data
+    scanf("%d",&n);
+    for(i = 0;i < n;i++){
+        scanf("%s",d);
+        strcat(c,d);
+        if(i!=n-1) strcat(c,".");
+    }
+    fp = fopen("class.data","a");
+    fprintf(fp,"%s-%s-%s\n",a,b,c);
+    fclose(fp);
+    cline++;
+}
+
+void deleteClass(cl class[])
+{
+    int i,k;
+    char a[20],b[20];
+    scanf("%s",a);
+    scanf("%s",b);
+    for(i = 0;i < cline;i++) if (strcmp(a,class[i].name) == 0 && strcmp(b,class[i].teacher) == 0) {k = i;break;}
+    fp = fopen("class.data","w");
+    for(i = 0;i < cline;i++){
+        if (i == k) continue;
+        fprintf(fp,"%s-%s-%s\n",class[i].name,class[i].teacher,class[i].students);
+    }
+    fclose(fp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -452,7 +522,8 @@ int main()
     acc all[100];
     getDatabase(r);
     getClassData(class);
-    printClass(class,r);
+    deleteClass(class);
+    //printClass(class,r);
 //     char lg;
 //     scanf("%s",&lg);
 //     getchar();

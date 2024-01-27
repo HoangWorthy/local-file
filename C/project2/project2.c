@@ -10,6 +10,7 @@
 // 9.Finish the modifyclass function
 // 10.Add teacher.data
 // 11.Draw a database relationship diagram
+// 12.Add validation in every input
 
 #include<stdio.h>
 #include<conio.h>
@@ -22,9 +23,9 @@ struct classdata{
     char students[500];
 };
 struct teacher{
-    char sname[20];
-    char name[30];
-    char email[50];
+    char nname[50];
+    char name[50];
+    char email[100];
 };
 
 struct student
@@ -45,6 +46,7 @@ FILE *fp;
 int l = 0;
 int line = 0;
 int cline = 0;
+int tline = 0;
 char perm[2];
 typedef struct classdata cl;
 typedef struct student sv;
@@ -54,14 +56,47 @@ typedef struct teacher tea;
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Teacher functions
 
+void stringProcessing4(char c[],tea t[], int tline)
+{
+    sscanf(c,"%[^-]-%[^-]-%[^-\n]",t[tline].nname,t[tline].name,t[tline].email);
+}
+
+void getTeacherData(tea t[])
+{
+    fp = fopen("teacher.data","r");
+    char c[100];
+    int i,j;
+    while(fgets(c,sizeof(c),fp)!= NULL){
+        stringProcessing4(c,t,tline);
+        tline++;
+    }
+    fclose(fp);
+    //printf("%s-%s-%s",t[1].nname,t[1].name,t[1].email);
+}
+
 void addTeacher()
 {
-
+    int n,i;
+    char b[30],c[50],a[20],e[10];
+    scanf("%d",&n);
+    for(i = 0;i < n;i++){
+        printf("Input Nickname: ");
+        scanf(" %s",a);
+        getchar();
+        printf("Input name: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        printf("Input email: ");
+        scanf("%s",c);
+    }
+    fp = fopen("teacher.data","a");
+    fprintf(fp,"%s-%s-%s\n",a,b,c);
+    fclose(fp);
 }
 
 void removeTeacher()
 {
-
+    
 }
 
 void printTeacherProfiles()
@@ -116,7 +151,7 @@ void stringProcessing1(char c[],sv r[], int l)
     sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].id,r[l].name,r[l].semester,r[l].coursename);
 }
 
-void getDatabase(sv r[])
+void getStudentData(sv r[])
 {
     fp = fopen("student.data","r");
     char c[100];
@@ -541,11 +576,12 @@ int main()
     sv a[100];
     sv r[100];
     acc all[100];
-    getDatabase(r);
+    tea t[100];
+    getTeacherData(t);
+    //getStudentData(r);
     //addClass(r);
-    getClassData(class);
+    //getClassData(class);
    // deleteClass(class);
-    printClass(class,r);
 //     char lg;
 //     scanf("%s",&lg);
 //     getchar();
@@ -562,7 +598,7 @@ int main()
 //             break;
 //         }
 //     }
-//     getDatabase(r);
+//     getStudentData(r);
 //     char o;
 //     while(strcmp(perm,"2") == 0){
 //         printf("1. Search\n");
@@ -607,15 +643,15 @@ int main()
 //         {
 //             case '1':
 //                 addSV(a,r);
-//                 getDatabase(r);
+//                 getStudentData(r);
 //                 break;
 //             case '2':
 //                 update(r);
-//                 getDatabase(r);
+//                 getStudentData(r);
 //                 break;
 //             case '3':
 //                 delete(r);
-//                 getDatabase(r);
+//                 getStudentData(r);
 //                 break;
 //             case '4':
 //                 search(r);

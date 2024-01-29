@@ -94,9 +94,19 @@ void addTeacher()
     fclose(fp);
 }
 
-void removeTeacher()
+void removeTeacher(tea t[])
 {
-    
+    int i,k;
+    char a[20];
+    fgets(a,sizeof(a),stdin);
+    a[strcspn(a,"\n")] = '\0';
+    for(i = 0;i < tline;i++) if (strcmp(a,t[i].name) == 0) {k = i;break;}
+    fp = fopen("teacher.data","w");
+    for(i = 0;i < tline;i++){
+        if (i == k) continue;
+        fprintf(fp,"%s-%s-%s\n",t[i].nname,t[i].name,t[i].email);
+    }
+    fclose(fp);
 }
 
 void printTeacherProfiles()
@@ -577,93 +587,4 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
-    getTeacherData(t);
-    //getStudentData(r);
-    //addClass(r);
-    //getClassData(class);
-   // deleteClass(class);
-//     char lg;
-//     scanf("%s",&lg);
-//     getchar();
-//     switch (lg)
-//     {
-//         case '1':{
-//             getUserAccounts(all);
-//             login(all);
-//             break;
-//         }
-//         case '2':{
-//             registers(all);
-//             getUserAccounts(all);
-//             break;
-//         }
-//     }
-//     getStudentData(r);
-//     char o;
-//     while(strcmp(perm,"2") == 0){
-//         printf("1. Search\n");
-//         printf("2. Exit\n");
-//         scanf("%s",&o);
-//         switch (o)
-//         {
-//         case '1':
-//             search(r);
-//             break;
-//         case '2':
-//             exit(1);
-//         }
-//     }
-//     while(strcmp(perm,"1") == 0){
-//         printf("1. Search\n");
-//         printf("1. Report\n");
-//         printf("3. Exit\n");
-//         scanf("%s",&o);
-//         switch (o)
-//         {
-//             case '1':
-//                 search(r);
-//                 break;
-//             case '2':
-//                 report(r);
-//                 break;
-//             case '3':
-//                 exit(1);
-//         }
-//     }
-//     while(strcmp(perm,"0") == 0){
-//         printf("1. Add more students\n");
-//         printf("2. Update students\n");
-//         printf("3. Delete students\n");
-//         printf("4. Search students\n");
-//         printf("5. Student reports\n");
-//         printf("6. Create accounts\n");
-//         printf("7. Exit\n");
-//         scanf("%s",&o);
-//         switch (o)
-//         {
-//             case '1':
-//                 addSV(a,r);
-//                 getStudentData(r);
-//                 break;
-//             case '2':
-//                 update(r);
-//                 getStudentData(r);
-//                 break;
-//             case '3':
-//                 delete(r);
-//                 getStudentData(r);
-//                 break;
-//             case '4':
-//                 search(r);
-//                 break;
-//             case '5':
-//                 report(r);
-//                 break;
-//             case '6':
-//                 createAcc();
-//                 break;
-//             case '7':
-//                 exit(1);
-//         }
-//     }
 }

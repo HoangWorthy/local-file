@@ -17,6 +17,8 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdbool.h>
+#include <ctype.h>
+
 struct classdata{
     char name[20];
     char teacher[20];
@@ -25,7 +27,7 @@ struct classdata{
 struct teacher{
     char nname[50];
     char name[50];
-    char email[100];
+    char gmail[100];
 };
 
 struct student
@@ -58,7 +60,7 @@ typedef struct teacher tea;
 
 void stringProcessing4(char c[],tea t[], int tline)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-\n]",t[tline].nname,t[tline].name,t[tline].email);
+    sscanf(c,"%[^-]-%[^-]-%[^-\n]",t[tline].nname,t[tline].name,t[tline].gmail);
 }
 
 void getTeacherData(tea t[])
@@ -71,23 +73,57 @@ void getTeacherData(tea t[])
         tline++;
     }
     fclose(fp);
-    //printf("%s-%s-%s",t[1].nname,t[1].name,t[1].email);
+    //printf("%s-%s-%s",t[1].nname,t[1].name,t[1].gmail);
+}
+
+bool validateGmail(char c[])
+{
+    char name[20];
+    sscanf(c,"%[a-zA-Z1-9]@mail.com",name);
+    strcat(name,"@gmail.com");
+    if(strcmp(name,c) == 0) return true;
+    else return false;
+}
+
+void ucaseName(char a[])
+{
+    int i;
+    a[0] = toupper(a[0]);
+    for(i = 1;i < strlen(a);i++){
+        if (a[i] == ' ') a[i+1] = toupper(a[i+1]);
+    }
 }
 
 void addTeacher()
 {
     int n,i;
+    char d[3];
     char b[30],c[50],a[20],e[10];
-    scanf("%d",&n);
+    do {
+        printf("Input number: ");
+        scanf("%s",d);
+    } while(atoi(d) == 0);
+    n = atoi(d);
     for(i = 0;i < n;i++){
-        printf("Input Nickname: ");
-        scanf(" %s",a);
+        do{
+            printf("Input Nickname: ");
+            scanf(" %s",a);
+            if (strchr(a,' ') != NULL) printf("There should be no spaces in nickname. Please try again!\n");
+        } while(strchr(a,' ') != NULL);
         getchar();
-        printf("Input name: ");
-        fgets(b,sizeof(b),stdin);
+        do{
+            printf("Input name: ");
+            fgets(b,sizeof(b),stdin);
+            if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
+        } while(strchr(b,' ') == NULL);
         b[strcspn(b,"\n")] = '\0';
-        printf("Input email: ");
-        scanf("%s",c);
+        strlwr(b);
+        ucaseName(b);
+        do{
+            printf("Input gmail: ");
+            scanf("%s",c);
+            if(!validateGmail(c)) printf("Wrong gmail! Please retry\n");
+        } while (!validateGmail(c));
     }
     fp = fopen("teacher.data","a");
     fprintf(fp,"%s-%s-%s\n",a,b,c);
@@ -104,7 +140,7 @@ void removeTeacher(tea t[])
     fp = fopen("teacher.data","w");
     for(i = 0;i < tline;i++){
         if (i == k) continue;
-        fprintf(fp,"%s-%s-%s\n",t[i].nname,t[i].name,t[i].email);
+        fprintf(fp,"%s-%s-%s\n",t[i].nname,t[i].name,t[i].gmail);
     }
     fclose(fp);
 }
@@ -587,4 +623,5 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
+    addTeacher();
 }

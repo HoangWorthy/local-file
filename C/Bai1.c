@@ -1,13 +1,16 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
  
+void ucaseName(char a[])
+{
+    int i;
+    toupper(a[0]);
+    printf("%s",a);
+}
 int main()
 {
-    int a;
-    int count = 0;
-    do{
-        scanf("%d",&a);
-        count+=a;
-    } while(a != 0);
-    printf("The sum of inputed number is: %d",count);
+    char a[] = {"xin chao"};
+    ucaseName(a);
     return 0;
 }

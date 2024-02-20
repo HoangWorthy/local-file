@@ -11,6 +11,7 @@
 // 10.Add teacher.data
 // 11.Draw a database relationship diagram
 // 12.Add validation in every input
+// 13.Connect user data with student data and teacher data
 
 #include<stdio.h>
 #include<conio.h>
@@ -79,7 +80,7 @@ void getTeacherData(tea t[])
 bool validateGmail(char c[])
 {
     char name[20];
-    sscanf(c,"%[a-zA-Z1-9]@mail.com",name);
+    sscanf(c,"%[a-zA-Z0-9]@mail.com",name);
     strcat(name,"@gmail.com");
     if(strcmp(name,c) == 0) return true;
     else return false;
@@ -97,34 +98,26 @@ void ucaseName(char a[])
 void addTeacher()
 {
     int n,i;
-    char d[3];
     char b[30],c[50],a[20],e[10];
-    do {
-        printf("Input number: ");
-        scanf("%s",d);
-    } while(atoi(d) == 0);
-    n = atoi(d);
-    for(i = 0;i < n;i++){
-        do{
-            printf("Input Nickname: ");
-            scanf(" %s",a);
-            if (strchr(a,' ') != NULL) printf("There should be no spaces in nickname. Please try again!\n");
-        } while(strchr(a,' ') != NULL);
-        getchar();
-        do{
-            printf("Input name: ");
-            fgets(b,sizeof(b),stdin);
-            if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
-        } while(strchr(b,' ') == NULL);
-        b[strcspn(b,"\n")] = '\0';
-        strlwr(b);
-        ucaseName(b);
-        do{
-            printf("Input gmail: ");
-            scanf("%s",c);
-            if(!validateGmail(c)) printf("Wrong gmail! Please retry\n");
-        } while (!validateGmail(c));
-    }
+    do{
+        printf("Input Nickname: ");
+        scanf(" %s",a);
+        if (strchr(a,' ') != NULL) printf("There should be no spaces in nickname. Please try again!\n");
+    } while(strchr(a,' ') != NULL);
+    getchar();
+    do{
+        printf("Input name: ");
+        fgets(b,sizeof(b),stdin);
+        if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
+    } while(strchr(b,' ') == NULL);
+    b[strcspn(b,"\n")] = '\0';
+    strlwr(b);
+    ucaseName(b);
+    do{
+        printf("Input gmail: ");
+        scanf("%s",c);
+        if(!validateGmail(c)) printf("Wrong gmail format. Please retry!\n");
+    } while (!validateGmail(c));
     fp = fopen("teacher.data","a");
     fprintf(fp,"%s-%s-%s\n",a,b,c);
     fclose(fp);
@@ -133,10 +126,16 @@ void addTeacher()
 void removeTeacher(tea t[])
 {
     int i,k;
+    int c = 0;
     char a[20];
-    fgets(a,sizeof(a),stdin);
-    a[strcspn(a,"\n")] = '\0';
-    for(i = 0;i < tline;i++) if (strcmp(a,t[i].name) == 0) {k = i;break;}
+    while (c == 0){
+        printf("Enter teacher name: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0';
+        for(i = 0;i < tline;i++) if (strcmp(a,t[i].name) == 0) {k = i;c++;break;}
+        if (c != 0) break;
+        else printf("Teacher name not found. Please retry!\n");
+    } 
     fp = fopen("teacher.data","w");
     for(i = 0;i < tline;i++){
         if (i == k) continue;
@@ -182,8 +181,13 @@ void addSV(sv a[], sv r[])
         printf("Name: ");
         fgets(a[i].name, sizeof(a[i].name), stdin);
         a[i].name[strcspn(a[i].name, "\n")] = '\0';
-        printf("Semester: ");
-        scanf("%s",&a[i].semester);
+        while(true){
+            printf("Semester: ");
+            scanf("%s",&a[i].semester);
+            if (atoi(a[i].semester) == 0) printf("Only accept numbers. Please try again!\n");
+            if (atoi(a[i].semester) > 1 || atoi(a[i].semester) <= 8) break;
+            else printf("Semester should be in range of 1 to 8. Please try again!\n");
+        }
         printf("Course Name: ");
         scanf("%s",&a[i].coursename);
         fprintf(fp,"%s-%s-%s-%s\n",a[i].id,a[i].name,a[i].semester,a[i].coursename);
@@ -215,41 +219,63 @@ void search(sv r[])
 {
     char c[100];
     int i;
-    char o;
+    char o[10];
+    int a = 0;
     printf("1. Search by ID\n");
     printf("2. Search by Name\n");
     printf("3. Search by Semester\n");
     printf("4. Search by Course name\n");
-    scanf("%s",&o);
-    switch(o){
-        case '1': {
+    printf("5. Back");
+    while(true){
+        scanf("%s",&o);
+        a = 0;
+        if (strcmp(o,"1") == 0) {
             printf("Type ID: ");
             scanf("%s",&c);  
-            for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
-            break;
+            for(i = 0;i < l;i++) 
+                if (strcmp(r[i].id,c)==0){
+                    a++;
+                    printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+                    break;
+                }
+            if (a == 0) printf("Not found!\n");
         }
-        case '2': {
+        else if (strcmp(o,"2") == 0) {
             printf("Type name: ");
             getchar();
             fgets(c,sizeof(c),stdin);
             c[strcspn(c,"\n")] = '\0';
-            for(i = 0;i < l;i++) if (strcmp(r[i].name,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
-            break;
+            for(i = 0;i < l;i++) 
+                if (strcmp(r[i].name,c)==0){ 
+                    a++;
+                    printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+                }
+            if (a == 0) printf("Not found!\n");
         }
-        case '3': {
+        else if (strcmp(o,"3") == 0) {
             printf("Type semester: ");
             scanf("%s",&c);  
-            for(i = 0;i < l;i++) if (strcmp(r[i].semester,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
-            break;
+            for(i = 0;i < l;i++)
+                if (strcmp(r[i].semester,c)==0){
+                    a++;
+                    printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+                }
+            if (a == 0) printf("Not found!\n");
         }
-        case '4': {
+        else if (strcmp(o,"4") == 0) {
             printf("Type coursename: ");
             scanf("%s",&c);  
-            for(i = 0;i < l;i++) if (strcmp(r[i].coursename,c)==0) printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+            for(i = 0;i < l;i++)
+                if (strcmp(r[i].coursename,c)==0){
+                    a++;
+                    printf("%s\t%s\t%s\t%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
+                }
+            if (a == 0) printf("Not found!\n");
+        }
+        else if (strcmp(o,"5") == 0) {
             break;
         }
-        default:
-            printf("Wrong!");
+        else printf("Wrong. Please retry!\n");
     }
 }
 
@@ -259,52 +285,72 @@ void update(sv r[])
     int k;
     int i;
     char c[100];
-    char o;
+    char o[10];
+    int n = 0;
     printf("1. Update ID\n");
     printf("2. Update Name\n");
     printf("3. Update Semester\n");
     printf("4. Update Course name\n");
-    scanf("%s",&o);
-    printf("Type ID: ");
-    scanf("%s",&c);
-    for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) {
-        k = i;
-        break;
-    }
-    switch(o){
-        case '1':{
-            printf("Type Updated ID: ");
-            scanf("%s",&a);
-            strcpy(r[k].id,a);
+    printf("5. Back");
+    scanf("%s",o);
+    while(n == 0){
+        printf("Type ID: ");
+        scanf("%s",&c);
+        for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) {
+            k = i;
+            n++;
             break;
         }
-        case '2':{
+        if (n == 0) printf("ID not found. Please retry!\n");
+    }
+    n = 0;
+    while(true){
+        if (strcmp(o,"1") == 0) {
+            printf("Type Updated ID: ");
+            while(n == 0){
+                n = 0;
+                scanf("%s",a);
+                for(i = 0;i < l;i++)
+                    if (strcmp(a,r[i].id) == 0){
+                        n++;
+                        printf("ID occupied. Please retry!\n");
+                        break;
+                    }
+            }
+            strcpy(r[k].id,a);
+        }
+        else if (strcmp(o,"2") == 0){
             printf("Type Updated Name: ");
             getchar();
             fgets(a,sizeof(a),stdin);
             a[strcspn(a,"\n")] = '\0';
             strcpy(r[k].name,a);
-            break;
         }
-        case '3':{
-            printf("Type Updated Semester: ");
-            scanf("%s",&a);
-            strcpy(r[k].semester,a);
-            break;
+        else if (strcmp(o,"3") == 0){
+            while(true){
+                printf("Type Updated Semester: ");
+                scanf("%s",&a);
+                if (atoi(a) == 0) printf("Only accept numbers. Please try again!\n");
+                if (atoi(a) > 1 || atoi(a) <= 8) break;
+                else printf("Semester should be in range of 1 to 8. Please try again!\n");
+            }
+                strcpy(r[k].semester,a);
         }
-        case '4':{
+        else if (strcmp(o,"4") == 0){
             printf("Type Updated Course name: ");
             scanf("%s",&a);
             strcpy(r[k].coursename,a);
+        }
+        else if (strcmp(o,"5") == 0){
             break;
         }
+        else printf("Wrong option. Please try again!\n");
     }
     fp = fopen("student.data","w");
     for(i = 0; i < l; i++){
         fprintf(fp,"%s-%s-%s-%s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename);
     }
     fclose(fp);
-    printf("Successfully\n");
 }
 
 void delete(sv r[])
@@ -334,22 +380,6 @@ void report(sv r[])
 //------------------------------------------------------------------------------------------------------------------------
 //                                                     Login/register functions
 
-void createAcc()
-{
-    char d[30],a[30],b[30],s[10];
-    fgets(d,sizeof(d),stdin);
-    d[strcspn(d,"\n")] = '\0';
-    fgets(d,sizeof(d),stdin);
-    a[strcspn(a,"\n")] = '\0';
-    fgets(b,sizeof(b),stdin);
-    b[strcspn(b,"\n")] = '\0';
-    fgets(s,sizeof(s),stdin);
-    s[strcspn(s,"\n")] = '\0';
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
-    fclose(fp);
-}
-
 void stringProcessing2(acc all[], char c[], int line)
 {
     sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].passowrd,all[line].perm);
@@ -368,16 +398,55 @@ void getUserAccounts(acc all[])
     //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].passowrd,all[1].perm);
 }
 
-void welcome(acc all[], int i, sv r[])
+void createAcc(acc all[])
+{
+    char d[30],a[30],b[30],s[10];
+    int i;
+    int c = 0;
+    printf("User ID: ");
+    fgets(d,sizeof(d),stdin);
+    d[strcspn(d,"\n")] = '\0';
+    while(c == 0){
+        c = 0;
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0';
+        for(i = 0;i < line;i++)
+            if (strcmp(a,all[i].username) == 0){
+                printf("Username Occupied. Please try again!\n");
+                c++;
+                break;
+            }
+        if (c == 0) break;
+    }
+    printf("Password: ");
+    fgets(b,sizeof(b),stdin);
+    b[strcspn(b,"\n")] = '\0';
+    do {
+    printf("Permission(0 = administrator, 1 = teacher, 2 = student): ");
+    fgets(s,sizeof(s),stdin);
+    s[strcspn(s,"\n")] = '\0';
+    if (strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0) printf("Permission should be 0 or 1 or 2. Please try again!\n");
+    } while(strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0);
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
+    fclose(fp);
+}
+
+void welcome(acc all[], int i, sv r[], tea t[])
 {
     int j;
     for(j = 0;j < l;j++) if (strcmp(all[i].id,r[j].id) == 0){
         printf("Welcome %s to the program\n",r[j].id);
         break;
     }
+    for(j = 0;j < tline;j++) if (strcmp(all[i].id,t[j].nname) == 0){
+        printf("Welcome %s to the program\n",t[j].name);
+        break;
+    }
 }
 
-void login(acc all[],sv r[])
+void login(acc all[],sv r[],tea t[])
 {
     char a[20],b[20];
     int i;
@@ -400,7 +469,7 @@ void login(acc all[],sv r[])
             k++;
             strcpy(perm,all[i].perm);
             perm[strcspn(perm,"\n")] = '\0';
-            welcome(all,i,r);
+            welcome(all,i,r,t);
             break;
             }
         }
@@ -623,5 +692,8 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
-    addTeacher();
+    getStudentData(r);
+    getUserAccounts(all);
+    getTeacherData(t);
+    login(all,r,t);
 }

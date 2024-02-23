@@ -11,7 +11,8 @@
 // 10.Add teacher.data
 // 11.Draw a database relationship diagram
 // 12.Add validation in every input
-// 13.Connect user data with student data and teacher data
+// 13.Add password validation
+// 14.Think about ID distribution
 
 #include<stdio.h>
 #include<conio.h>
@@ -42,7 +43,7 @@ struct accounts
 {
     char id[30];
     char username[20];
-    char passowrd[20];
+    char password[20];
     char perm[2];
 };
 FILE *fp;
@@ -50,6 +51,7 @@ int l = 0;
 int line = 0;
 int cline = 0;
 int tline = 0;
+int accountIndex;
 char perm[2];
 typedef struct classdata cl;
 typedef struct student sv;
@@ -382,7 +384,7 @@ void report(sv r[])
 
 void stringProcessing2(acc all[], char c[], int line)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].passowrd,all[line].perm);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].password,all[line].perm);
 }
 
 void getUserAccounts(acc all[])
@@ -395,7 +397,7 @@ void getUserAccounts(acc all[])
         line++;
     }
     fclose(fp);
-    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].passowrd,all[1].perm);
+    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].password,all[1].perm);
 }
 
 void createAcc(acc all[])
@@ -460,12 +462,13 @@ void login(acc all[],sv r[],tea t[])
         fgets(b,sizeof(b),stdin);
         b[strcspn(b,"\n")] = '\0';
         for(i = 0;i < line;i++){ 
-            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) != 0){
+            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) != 0){
                 printf("Wrong password!\n");
                 k++;
             }
-            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].passowrd) == 0){
+            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) == 0){
             c = true;
+            accountIndex = i;
             k++;
             strcpy(perm,all[i].perm);
             perm[strcspn(perm,"\n")] = '\0';
@@ -536,6 +539,57 @@ void registers(acc all[])
     strcpy(perm,"2");
 }
 
+void accountManagement(acc all[])
+{
+    char o[5];
+    char a[50],b[50],c[50];
+    int k = 1;
+    bool bol = false;
+    while(true){
+        printf("1.Change username\n");
+        printf("2.Change password\n");
+        printf("3.Back");
+        scanf("%s",o);
+        if (strcmp(o,"1") == 0) {
+            while(!bol){
+                printf("New username: ");
+                scanf("%s",a);
+                if (strchr(a,' ') != NULL) {printf("Username should not contain spaces. Please retype!\n");continue;}
+                bol = true;
+            }
+        }
+        else if (strcmp(o,"2") == 0){
+            while(k >= 1){
+                k = 0;
+                printf("Old password: ");
+                scanf("%s",a);
+                printf("New password: ");
+                scanf("%s",b);
+                printf("Retype password: ");
+                scanf("%s",c);
+                if (strcmp(a,all[accountIndex].password) != 0){
+                    k++;
+                    printf("Wrong password!\n");
+                }
+                if (strcmp(b,c) != 0){
+                    k++;
+                    printf("Password does not match!\n");
+                }
+            }
+        }
+        else if (strcmp(o,"3") == 0){
+            break;
+        }
+        else printf("Wrong option. Please try again!\n");
+    }
+
+}
+
+void signOut()
+{
+
+}
+
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Class functions
 
@@ -574,7 +628,7 @@ void printClass(cl class[], sv r[])
 {
     int i;
     for(i = 0;i < cline;i++){
-        printf("Class: %s\nTeacher : %s\nStudents: \n",class[i].name,class[i].teacher);
+        printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
         printStudents(class,i,r);
     }
 }
@@ -587,16 +641,34 @@ void printClassToFile(cl class[])
     fclose(fp);
 }
 
-void addStudents(cl class[], int k)
+void addStudents(cl class[], int k, sv r[])
 {
-    int n,i;
+    int i;
+    bool a = false;
+    bool b = true;
     char c[20];
-    scanf("%d",&n);
-    for(i = 0;i < n;i++){
+    char *token = strtok(class[k].students,".");
+    // Add loop to this function
+    while(!a || b){
+        printf("Student ID: ");
         scanf("%s",c);
-        strcat(class[k].students,".");
-        strcat(class[k].students,c);
+        for(i = 0; i < l; i++) if (strcmp(c,r[i].id) == 0){
+            a == true;
+            break;
+        }
+        while(token != NULL){
+            if (strcmp(c,token) == 0){
+                printf("Student is already in the class. Please retry!");
+                b == true;
+                break;
+            }
+            token = strtok(NULL,".");   
+            b = false;
+        }
+        printf("Student ID not found. Please retry!\n");
     }
+    strcat(class[k].students,".");
+    strcat(class[k].students,c);
     printClassToFile(class);
 }
 
@@ -618,23 +690,34 @@ void deleteStudents(cl class[], int k)
     printClassToFile(class);
 }
 
-void modifyClass(cl class[])
+void modifyClass(cl class[], sv r[])
 {
     // Show all classes || search by class name and teacher name.
     int i,k;
-    char c[50],d[50],o[5];
-    scanf("%s",&c);
-    scanf("%s",&d);
-    for(i = 0;i < cline;i++) if (strcmp(c,class[i].name) == 0 && strcmp(d,class[i].teacher) == 0) {k = i;break;}
-    do {
-    scanf("%s",&o);
-    if (strcmp(o,"1") == 0) {
-        addStudents(class,k);
+    char o[5],c[5];
+    for(i = 0; i < cline; i++){
+        printf("%d.Class: %s\tTeacher: %s\n",i+1,class[i].name,class[i].teacher);
     }
-    else if (strcmp(o,"2") == 0) {
-        deleteStudents(class,k);
-    }
-    else printf("Wrong input!");
+    do{
+        printf("Select class: ");
+        scanf("%s",c);
+        k = atoi(c) - 1;
+    } while (k > cline && k < 0);
+    do{
+        printf("1. Add students to class\n");
+        printf("2. Delete students from class\n");
+        printf("3. Back\n");
+        scanf("%s",o);
+        if (strcmp(o,"1") == 0) {
+            addStudents(class,k,r);
+        }
+        else if (strcmp(o,"2") == 0) {
+            deleteStudents(class,k);
+        }
+        else if (strcmp(o,"3") == 0) {
+            break;
+        }
+        else printf("Wrong input. Please retry!\n");
     } while (strcmp(o,"1") != 0 && (strcmp(o,"2") != 0));
 }
 
@@ -692,8 +775,8 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
+    getClassData(class);
     getStudentData(r);
     getUserAccounts(all);
-    getTeacherData(t);
-    login(all,r,t);
+    modifyClass(class,r);
 }

@@ -13,6 +13,9 @@
 // 12.Add validation in every input
 // 13.Add password validation
 // 14.Think about ID distribution
+// 15.To get out of loop, whenever user type exit, it will go back to previous menu.
+// 16.Add admin.noti
+// 17.Finish the addclass function
 
 #include<stdio.h>
 #include<conio.h>
@@ -603,6 +606,7 @@ void getClassData(cl class[])
     fp = fopen("class.data","r");
     char c[100];
     int i,j;
+    cline = 0;
     while(fgets(c,sizeof(c),fp)!= NULL){
         stringProcessing3(c,class,cline);
         cline++;
@@ -643,42 +647,52 @@ void printClassToFile(cl class[])
 
 void addStudents(cl class[], int k, sv r[])
 {
+    // Add teacher permission to request
     int i;
     bool a = false;
-    bool b = true;
+    int b = 0;
     char c[20];
     char *token = strtok(class[k].students,".");
     // Add loop to this function
-    while(!a || b){
+    while(!a || b == 0){
+        a = false;
+        b = 1;
         printf("Student ID: ");
         scanf("%s",c);
         for(i = 0; i < l; i++) if (strcmp(c,r[i].id) == 0){
-            a == true;
+            a = true;
             break;
         }
         while(token != NULL){
             if (strcmp(c,token) == 0){
-                printf("Student is already in the class. Please retry!");
-                b == true;
+                printf("Student is already in the class. Please retry!\n");
+                b = 0;
                 break;
             }
             token = strtok(NULL,".");   
-            b = false;
         }
-        printf("Student ID not found. Please retry!\n");
+        if (!a) printf("Student ID not found. Please retry!\n");
     }
+    getClassData(class);
     strcat(class[k].students,".");
     strcat(class[k].students,c);
     printClassToFile(class);
 }
 
-void deleteStudents(cl class[], int k)
+void deleteStudentsFromClass(cl class[], int k, sv r[])
 {
+    // Add teacher permission to request
     cl new;
     strcpy(new.students,"\0");
     char c[20];
     int i;
-    scanf("%s",&c);
+    int a = 0;
+    while(a == 0){
+        printf("Input ID: ");
+        scanf("%s",c);
+        for(i = 0;i < l;i++) if (strcmp(c,r[i].id) == 0) {a++;break;}
+        if(a == 0) printf("Student is not in the class. Please retry!\n");
+    }
     char *token = strtok(class[k].students,".");
     while(token != NULL){
         if (strcmp(token,c) == 0) {token = strtok(NULL,".");continue;}
@@ -687,6 +701,7 @@ void deleteStudents(cl class[], int k)
         if (token!= NULL) strcat(new.students,".");
     }
     strcpy(class[k].students,new.students);
+    if (class[k].students[strlen(class[k].students)-1] == '.') class[k].students[strlen(class[k].students)-1] = '\0';
     printClassToFile(class);
 }
 
@@ -702,6 +717,7 @@ void modifyClass(cl class[], sv r[])
         printf("Select class: ");
         scanf("%s",c);
         k = atoi(c) - 1;
+        if (k > cline && k < 0) printf("Class %s unavailable. Please retry!",c);
     } while (k > cline && k < 0);
     do{
         printf("1. Add students to class\n");
@@ -712,7 +728,7 @@ void modifyClass(cl class[], sv r[])
             addStudents(class,k,r);
         }
         else if (strcmp(o,"2") == 0) {
-            deleteStudents(class,k);
+            deleteStudentsFromClass(class,k,r);
         }
         else if (strcmp(o,"3") == 0) {
             break;
@@ -721,16 +737,25 @@ void modifyClass(cl class[], sv r[])
     } while (strcmp(o,"1") != 0 && (strcmp(o,"2") != 0));
 }
 
-void addClass(sv r[])
+void addClass(sv r[], tea t[])
 {
     int i,n,j;
+    int q = 0;
     bool p;
-    char a[20],b[20],c[100],d[20];
+    char a[20],b[20],c[100],d[20],k[10];
     strcpy(c,"\0");
+    printf("Class name: ");
     scanf("%s",a);
-    scanf("%s",b);
+    while(q == 0){
+        printf("Teacher in charge: ");
+        scanf("%s",b);
+        for(i = 0;i < tline;i++) if (strcmp(b,t[i].nname) == 0) {q++;break;}
+        if (q == 0) printf("Invalid. Please retry!\n");
+    }
     //Check if there exist the teacher name in teacher.data
-    scanf("%d",&n);
+    printf("Number of student: ");
+    scanf("%s",k);
+    n = atoi(k);
     for(i = 0;i < n;i++){
         do
         {

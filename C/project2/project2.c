@@ -1,21 +1,14 @@
 //Note: Add clearscreen last.
-// 1.Check char o, it's gonna run the switch if o = 12 or o = 13... It should be fixed by switching switch to if else.
-// 2.Fix the login and register, username should be all downcase. Should add validation.
 // 3.Looping and exiting the loop in login and register and also other functions can retry it.
 // 4.Add classes into the program.
-// 5.User still have access to the register function, add ID columm to user.data, link the account info from student.data with user.data. 
-// 6.Recheck the whole login/register function
 // 7.Add logout function
 // 8.Change permission of the teacher,admin and students
-// 9.Finish the modifyclass function
-// 10.Add teacher.data
 // 11.Draw a database relationship diagram
 // 12.Add validation in every input
-// 13.Add password validation
 // 14.Think about ID distribution
 // 15.To get out of loop, whenever user type exit, it will go back to previous menu.
 // 16.Add admin.noti
-// 17.Finish the addclass function
+// 17.Create a menu
 
 #include<stdio.h>
 #include<conio.h>
@@ -130,6 +123,7 @@ void addTeacher()
 
 void removeTeacher(tea t[])
 {
+    getchar();
     int i,k;
     int c = 0;
     char a[20];
@@ -222,7 +216,7 @@ void getStudentData(sv r[])
 
 void search(sv r[])
 {
-    char c[100];
+    char c[50];
     int i;
     char o[10];
     int a = 0;
@@ -236,7 +230,7 @@ void search(sv r[])
         a = 0;
         if (strcmp(o,"1") == 0) {
             printf("Type ID: ");
-            scanf("%s",&c);  
+            scanf("%s",c);  
             for(i = 0;i < l;i++) 
                 if (strcmp(r[i].id,c)==0){
                     a++;
@@ -259,7 +253,7 @@ void search(sv r[])
         }
         else if (strcmp(o,"3") == 0) {
             printf("Type semester: ");
-            scanf("%s",&c);  
+            scanf("%s",c);  
             for(i = 0;i < l;i++)
                 if (strcmp(r[i].semester,c)==0){
                     a++;
@@ -269,7 +263,7 @@ void search(sv r[])
         }
         else if (strcmp(o,"4") == 0) {
             printf("Type coursename: ");
-            scanf("%s",&c);  
+            scanf("%s",c);  
             for(i = 0;i < l;i++)
                 if (strcmp(r[i].coursename,c)==0){
                     a++;
@@ -383,217 +377,6 @@ void report(sv r[])
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-//                                                     Login/register functions
-
-void stringProcessing2(acc all[], char c[], int line)
-{
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].password,all[line].perm);
-}
-
-void getUserAccounts(acc all[])
-{
-    char c[100];
-    fp = fopen("user.data","r");
-    while (fgets(c,sizeof(c),fp) != NULL)
-    {
-        stringProcessing2(all,c,line);
-        line++;
-    }
-    fclose(fp);
-    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].password,all[1].perm);
-}
-
-void createAcc(acc all[])
-{
-    char d[30],a[30],b[30],s[10];
-    int i;
-    int c = 0;
-    printf("User ID: ");
-    fgets(d,sizeof(d),stdin);
-    d[strcspn(d,"\n")] = '\0';
-    while(c == 0){
-        c = 0;
-        printf("Username: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0';
-        for(i = 0;i < line;i++)
-            if (strcmp(a,all[i].username) == 0){
-                printf("Username Occupied. Please try again!\n");
-                c++;
-                break;
-            }
-        if (c == 0) break;
-    }
-    printf("Password: ");
-    fgets(b,sizeof(b),stdin);
-    b[strcspn(b,"\n")] = '\0';
-    do {
-    printf("Permission(0 = administrator, 1 = teacher, 2 = student): ");
-    fgets(s,sizeof(s),stdin);
-    s[strcspn(s,"\n")] = '\0';
-    if (strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0) printf("Permission should be 0 or 1 or 2. Please try again!\n");
-    } while(strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0);
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
-    fclose(fp);
-}
-
-void welcome(acc all[], int i, sv r[], tea t[])
-{
-    int j;
-    for(j = 0;j < l;j++) if (strcmp(all[i].id,r[j].id) == 0){
-        printf("Welcome %s to the program\n",r[j].id);
-        break;
-    }
-    for(j = 0;j < tline;j++) if (strcmp(all[i].id,t[j].nname) == 0){
-        printf("Welcome %s to the program\n",t[j].name);
-        break;
-    }
-}
-
-void login(acc all[],sv r[],tea t[])
-{
-    char a[20],b[20];
-    int i;
-    int k = 0;
-    bool c = false;
-    while(!c){
-        printf("Username: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0';
-        printf("Password: ");
-        fgets(b,sizeof(b),stdin);
-        b[strcspn(b,"\n")] = '\0';
-        for(i = 0;i < line;i++){ 
-            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) != 0){
-                printf("Wrong password!\n");
-                k++;
-            }
-            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) == 0){
-            c = true;
-            accountIndex = i;
-            k++;
-            strcpy(perm,all[i].perm);
-            perm[strcspn(perm,"\n")] = '\0';
-            welcome(all,i,r,t);
-            break;
-            }
-        }
-        if (k == 0) printf("There is no account with that username\n");
-        k = 0;
-    }
-}
-
-bool checkOccuppied(char d[], acc all[])
-{
-    int i;
-    for (i = 0;i < line;i++) if (strcmp(d,all[i].id) == 0) return true;
-}
-
-void registers(acc all[])
-{
-    int i;
-    bool c = false;
-    char a[20],b[20],d[20],s[20];
-    while(true){
-        c = false;
-        printf("Username: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0'; 
-        printf("Password: ");
-        fgets(b,sizeof(b),stdin);
-        b[strcspn(b,"\n")] = '\0';
-        printf("Retype password: ");
-        fgets(s,sizeof(s),stdin);
-        s[strcspn(s,"\n")] = '\0';
-        if (strcmp(b,s) != 0){
-            printf("Password does not match. Please retype\n");
-            continue;
-        }
-        if (strcmp(a,b) == 0) {
-            printf("Username cannot match the password\n");
-            continue;
-        }
-        for(i = 0;i < line;i++) if(strcmp(a,all[i].username)==0){
-            printf("Username occupied\n");
-            c = true;
-            break;
-        }
-        if (c) continue;
-        if (strchr(a,' ') == NULL && strchr(b,' ') == NULL) break;
-        else printf("Wrong input! Please retry\n");
-    }
-    printf("Successful\n");
-    printf("Please enter your ID: ");
-    while(fgets(d,sizeof(d),stdin)){
-        d[strcspn(d,"\n")] = '\0';
-        if (checkOccuppied(d,all)){
-            printf("There's already a user with ID %s. Please retry!\n",d);
-            continue;
-        }
-        else {
-            printf("Please enter your ID: ");
-            break;
-        }
-    }
-    fp = fopen("user.data","a");
-    fprintf(fp,"%s-%s-%s-2\n",d,a,b);
-    fclose(fp);
-    strcpy(perm,"2");
-}
-
-void accountManagement(acc all[])
-{
-    char o[5];
-    char a[50],b[50],c[50];
-    int k = 1;
-    bool bol = false;
-    while(true){
-        printf("1.Change username\n");
-        printf("2.Change password\n");
-        printf("3.Back");
-        scanf("%s",o);
-        if (strcmp(o,"1") == 0) {
-            while(!bol){
-                printf("New username: ");
-                scanf("%s",a);
-                if (strchr(a,' ') != NULL) {printf("Username should not contain spaces. Please retype!\n");continue;}
-                bol = true;
-            }
-        }
-        else if (strcmp(o,"2") == 0){
-            while(k >= 1){
-                k = 0;
-                printf("Old password: ");
-                scanf("%s",a);
-                printf("New password: ");
-                scanf("%s",b);
-                printf("Retype password: ");
-                scanf("%s",c);
-                if (strcmp(a,all[accountIndex].password) != 0){
-                    k++;
-                    printf("Wrong password!\n");
-                }
-                if (strcmp(b,c) != 0){
-                    k++;
-                    printf("Password does not match!\n");
-                }
-            }
-        }
-        else if (strcmp(o,"3") == 0){
-            break;
-        }
-        else printf("Wrong option. Please try again!\n");
-    }
-
-}
-
-void signOut()
-{
-
-}
-
-//------------------------------------------------------------------------------------------------------------------------
 //                                                       Class functions
 
 void stringProcessing3(char c[], cl class[], int cline)
@@ -628,7 +411,7 @@ void printStudents(cl class[], int i, sv r[])
     
 }
 
-void printClass(cl class[], sv r[])
+void printAllClass(cl class[], sv r[])
 {
     int i;
     for(i = 0;i < cline;i++){
@@ -636,6 +419,7 @@ void printClass(cl class[], sv r[])
         printStudents(class,i,r);
     }
 }
+
 
 void printClassToFile(cl class[])
 {
@@ -750,9 +534,8 @@ void addClass(sv r[], tea t[])
         printf("Teacher in charge: ");
         scanf("%s",b);
         for(i = 0;i < tline;i++) if (strcmp(b,t[i].nname) == 0) {q++;break;}
-        if (q == 0) printf("Invalid. Please retry!\n");
+        if (q == 0) printf("Teacher not found. Please retry!\n");
     }
-    //Check if there exist the teacher name in teacher.data
     printf("Number of student: ");
     scanf("%s",k);
     n = atoi(k);
@@ -789,6 +572,293 @@ void deleteClass(cl class[])
     fclose(fp);
 }
 
+
+//------------------------------------------------------------------------------------------------------------------------
+//                                                     Login/register functions
+
+void stringProcessing2(acc all[], char c[], int line)
+{
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].password,all[line].perm);
+}
+
+void getUserAccounts(acc all[])
+{
+    char c[100];
+    fp = fopen("user.data","r");
+    while (fgets(c,sizeof(c),fp) != NULL)
+    {
+        stringProcessing2(all,c,line);
+        line++;
+    }
+    fclose(fp);
+    //printf("%s-%s-%s-%s",all[1].name,all[1].username,all[1].password,all[1].perm);
+}
+
+bool passwordValidate(char c[])
+{
+    int a = 0;
+    int b = 0;
+    int d = 0;
+    int i;
+    for(i = 0;i < strlen(c);i++) {
+        if (isupper(c[i])) a++;
+        else if (isdigit(c[i])) b++;
+        else if (!isalnum(c[i])) d++;
+    }
+    if (strchr(c,' ') != NULL) {printf("Password should not contain spaces!\n");return false;}
+    if (a > 0 && b > 0 && d > 0) return true;
+    else {printf("Password must contain uppercase characters, numbers and special characters!\n");return false;}
+}
+
+void createAcc(acc all[])
+{
+    getchar();
+    char d[30],a[30],b[30],s[10];
+    int i;
+    int c = 0;
+    printf("User ID: ");
+    fgets(d,sizeof(d),stdin);
+    d[strcspn(d,"\n")] = '\0';
+    while(c == 0){
+        c = 0;
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0';
+        if (strchr(a,' ') != NULL) {printf("Username should not contain spaces\n");continue;}
+        for(i = 0;i < line;i++)
+            if (strcmp(a,all[i].username) == 0){
+                printf("Username Occupied. Please try again!\n");
+                c++;
+                break;
+            }
+        if (c == 0) break;
+        else c = 0;
+    }
+    do{
+        printf("Password: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+    }while(!passwordValidate(b));
+    do {
+    printf("Permission(0 = administrator, 1 = teacher, 2 = student): ");
+    fgets(s,sizeof(s),stdin);
+    s[strcspn(s,"\n")] = '\0';
+    if (strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0) printf("Permission should be 0 or 1 or 2. Please try again!\n");
+    } while(strcmp(s,"0") != 0 || strcmp(s,"1") != 0 || strcmp(s,"2") != 0);
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-%s\n",d,a,b,s);
+    fclose(fp);
+}
+
+void welcome(acc all[], int i, sv r[], tea t[])
+{
+    int j;
+    for(j = 0;j < l;j++) if (strcmp(all[i].id,r[j].id) == 0){
+        printf("Welcome %s to the program\n",r[j].id);
+        break;
+    }
+    for(j = 0;j < tline;j++) if (strcmp(all[i].id,t[j].nname) == 0){
+        printf("Welcome %s to the program\n",t[j].name);
+        break;
+    }
+}
+
+
+void removeAccount(acc all[])
+{
+    int i,k;
+    int c = 0;
+    char a[20];
+    char o[10] = "N";
+    while (strcmp(o,"N") == 0){
+        strcpy(o,"\0");
+        printf("Enter account ID: ");
+        scanf("%s",a);
+        for(i = 0;i < line;i++) if (strcmp(a,all[i].id) == 0) {k = i;c++;line--;break;}
+        if (c != 0) {
+            while(printf("Are you sure? (Y/N)\n") && scanf("%s",o)){
+                if (strcmp(o,"Y") == 0 || strcmp(o,"N") == 0) break;
+            }
+        }
+        else {printf("Account not found. Please retry!\n");strcpy(o,"N");}
+    }
+    fp = fopen("user.data","w");
+    for(i = 0;i < line;i++){
+        if (i == k) continue;
+        fprintf(fp,"%s-%s-%s-%s\n",all[i].id,all[i].username,all[i].password,all[i].perm);
+    }
+    fclose(fp);
+}
+
+
+void login(acc all[],sv r[],tea t[])
+{
+    getchar();
+    char a[20],b[20];
+    int i;
+    int k = 0;
+    bool c = false;
+    while(!c){
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0';
+        printf("Password: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        for(i = 0;i < line;i++){ 
+            if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) != 0){
+                printf("Wrong password!\n");
+                k++;
+            }
+            else if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) == 0){
+            c = true;
+            accountIndex = i;
+            k++;
+            strcpy(perm,all[i].perm);
+            perm[strcspn(perm,"\n")] = '\0';
+            welcome(all,i,r,t);
+            break;
+            }
+        }
+        if (k == 0) printf("There is no account with that username\n");
+        k = 0;
+    }
+}
+
+bool checkOccuppied(char d[], acc all[])
+{
+    int i;
+    for (i = 0;i < line;i++){
+        if (strcmp(d,all[i].id) == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void registers(acc all[])
+{
+    getchar();
+    int i;
+    bool m = true;
+    bool n = true;
+    char a[20],b[20],d[20],s[20];
+    while(m){
+        m = false;
+        printf("Username: ");
+        fgets(a,sizeof(a),stdin);
+        a[strcspn(a,"\n")] = '\0'; 
+        for(i = 0;i < line;i++) if(strcmp(a,all[i].username)==0){
+            printf("Username occupied\n");
+            m = true;
+            break;
+        }
+        if (strchr(a,' ') != NULL) {printf("Username should not contain spaces. Please retry!\n");m = true;}
+    }
+    do{
+        printf("Password: ");
+        fgets(b,sizeof(b),stdin);
+        b[strcspn(b,"\n")] = '\0';
+        
+        printf("Retype password: ");
+        fgets(s,sizeof(s),stdin);
+        s[strcspn(s,"\n")] = '\0';
+        if (strcmp(b,s) != 0){
+            printf("Password does not match. Please retype\n");
+            continue;
+        }
+        else if (strcmp(a,b) == 0) {
+            printf("Username cannot match the password\n");
+            continue;
+        }
+    } while(!passwordValidate(b));
+
+    printf("Successful\n");
+    do{
+        printf("Please enter your ID: ");
+        fgets(d,sizeof(d),stdin);
+        d[strcspn(d,"\n")] = '\0';
+        if (!checkOccuppied(d,all)){
+            printf("There's already a user with ID %s. Please retry!\n",d);
+            continue;
+        }
+    } while(!checkOccuppied(d,all));
+    fp = fopen("user.data","a");
+    fprintf(fp,"%s-%s-%s-2\n",d,a,b);
+    fclose(fp);
+    strcpy(perm,"2");
+}
+
+void accountManagement(acc all[])
+{
+    char o[5];
+    char a[50],b[50],c[50];
+    int k = 1;
+    int i;
+    bool bol = false;
+    while(true){
+        printf("1.Change username\n");
+        printf("2.Change password\n");
+        printf("3.Back\n");
+        scanf("%s",o);
+        if (strcmp(o,"1") == 0) {
+            while(!bol){
+                printf("New username: "); 
+                scanf("%s",a);
+                if (strchr(a,' ') != NULL) {printf("Username should not contain spaces. Please retype!\n");continue;}
+                bol = true;
+            }
+            strcpy(all[accountIndex].username,a);
+            fp = fopen("user.data","w");
+            for(i = 0;i < line;i++){
+                fprintf(fp,"%s-%s-%s-%s\n",all[i].id,all[i].username,all[i].password,all[i].perm);
+            }
+            fclose(fp);
+        }
+        else if (strcmp(o,"2") == 0){
+            while(k >= 1){
+                k = 0;
+                printf("Old password: ");
+                scanf("%s",a);
+                printf("New password: ");
+                scanf("%s",b);
+                printf("Retype password: ");
+                scanf("%s",c);
+                if (strcmp(a,all[accountIndex].password) != 0){
+                    k++;
+                    printf("Wrong password!\n");
+                }
+                if (strcmp(b,c) != 0){
+                    k++;
+                    printf("Password does not match!\n");
+                }
+                if (strcmp(a,b) == 0){
+                    k++;
+                    printf("New password must be different\n");
+                }
+                if (!passwordValidate(b)) k++;
+            }
+            strcpy(all[accountIndex].password,b);
+            fp = fopen("user.data","w");
+            for(i = 0;i < line;i++){
+                fprintf(fp,"%s-%s-%s-%s\n",all[i].id,all[i].username,all[i].password,all[i].perm);
+            }
+            fclose(fp);
+        }
+        else if (strcmp(o,"3") == 0){
+            break;
+        }
+        else {printf("Wrong option. Please try again!\n");continue;}
+    }
+}
+
+void logOut()
+{
+    accountIndex = -1;
+    strcpy(perm,"\0");
+}
+
+
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Main function
 
@@ -800,8 +870,67 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
-    getClassData(class);
-    getStudentData(r);
     getUserAccounts(all);
-    modifyClass(class,r);
+    char o[10];
+    do{
+        printf("1.Login\n");
+        printf("2.Register\n");
+        scanf("%s",o);
+        if (strcmp(o,"1") == 0) login(all,r,t);
+        else if (strcmp(o,"2") == 0) registers(all);
+        else printf("Wrong option. Please retry!\n");
+    } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0);
+    system("cls");
+    if (strcmp(perm,"0") == 0) {
+        printf("1.Student management\n");
+        printf("2.Teacher management\n");
+        printf("3.Class management\n");
+        printf("4.Account management\n");
+        printf("5.Logout\n");
+        scanf("%s",o);
+        if (strcmp(o,"1") == 0){
+            printf("1.Add students\n");
+            printf("2.Delete students\n");
+            printf("3.Modify students\n");
+            printf("4.Search students\n");
+            printf("5.Student reports\n");
+            printf("6.Back\n");
+            scanf("%s",o);
+        }
+        else if (strcmp(o,"2") == 0){
+            printf("1.Add students\n");
+            printf("2.Delete students\n");
+            printf("3.Back\n");
+            scanf("%s",o);
+        }
+        else if (strcmp(o,"3") == 0){
+            printf("1.Add class\n");
+            printf("2.Delete class\n");
+            printf("3.Modify class\n");
+            printf("4.Class reports\n");
+            printf("5.Back\n");
+            scanf("%s",o);
+        }
+        else if (strcmp(o,"4") == 0){
+            printf("1.Add account\n");
+            printf("2.Delete account\n");
+            printf("3.Modify account\n");
+            printf("4.Back\n");
+            scanf("%s",o);
+        }
+        else if (strcmp(o,"5") == 0){
+            logOut();
+        }
+    }
+    else if (strcmp(perm,"1") == 0) {
+        printf("1.Student management\n");
+        printf("2.Class management\n");
+        printf("3.Account management\n");
+        scanf("%s",o);
+    }
+    else if (strcmp(perm,"2") == 0) {
+        printf("1.Class management\n");
+        printf("2.Account management\n");
+        scanf("%s",o);
+    }
 }

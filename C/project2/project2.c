@@ -9,6 +9,7 @@
 // 15.To get out of loop, whenever user type exit, it will go back to previous menu.
 // 16.Add admin.noti
 // 17.Create a menu
+// 18.Make a pause at every function & make a loop to reuse the function without going back to the menu
 
 #include<stdio.h>
 #include<conio.h>
@@ -54,6 +55,14 @@ typedef struct student sv;
 typedef struct accounts acc;
 typedef struct teacher tea;
 
+bool checkInput(char a[])
+{
+    int i;
+    for(i = 0;i < strlen(a);i++) if (!isdigit(a[i])) return false;
+    return true;
+}
+
+
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Teacher functions
 
@@ -93,32 +102,48 @@ void ucaseName(char a[])
     }
 }
 
-void addTeacher()
+void addTeacher(tea t[])
 {
-    int n,i;
-    char b[30],c[50],a[20],e[10];
+    int n,i,j;
+    int p = 0;
+    int q;
+    char b[30],c[50],a[20],e[10],d[10];
     do{
-        printf("Input Nickname: ");
-        scanf(" %s",a);
-        if (strchr(a,' ') != NULL) printf("There should be no spaces in nickname. Please try again!\n");
-    } while(strchr(a,' ') != NULL);
-    getchar();
-    do{
-        printf("Input name: ");
-        fgets(b,sizeof(b),stdin);
-        if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
-    } while(strchr(b,' ') == NULL);
-    b[strcspn(b,"\n")] = '\0';
-    strlwr(b);
-    ucaseName(b);
-    do{
-        printf("Input gmail: ");
-        scanf("%s",c);
-        if(!validateGmail(c)) printf("Wrong gmail format. Please retry!\n");
-    } while (!validateGmail(c));
-    fp = fopen("teacher.data","a");
-    fprintf(fp,"%s-%s-%s\n",a,b,c);
-    fclose(fp);
+        printf("Number of teacher: ");
+        scanf("%s",d);
+        if (!checkInput(d)) printf("Invalid number!\n");
+    } while (!checkInput(d));
+    q = atoi(d);
+    for (i = 0;i < q;i++) {
+        do{
+            p = 0;
+            printf("Input Nickname: ");
+            scanf("%s",a);
+            if (strchr(a,' ') != NULL) {printf("There should be no spaces in nickname. Please try again!\n");p++;}
+            for(j = 0;j < tline;j++) if (strcmp(a,t[i].nname) == 0) {
+                p++;
+                printf("Nickname occupied!\n");
+                break;
+            }
+        } while(p > 0);
+        getchar();
+        do{
+            printf("Input name: ");
+            fgets(b,sizeof(b),stdin);
+            if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
+        } while(strchr(b,' ') == NULL);
+        b[strcspn(b,"\n")] = '\0';
+        strlwr(b);
+        ucaseName(b);
+        do{
+            printf("Input gmail: ");
+            scanf("%s",c);
+            if(!validateGmail(c)) printf("Wrong gmail format. Please retry!\n");
+        } while (!validateGmail(c));
+        fp = fopen("teacher.data","a");
+        fprintf(fp,"%s-%s-%s\n",a,b,c);
+        fclose(fp);
+    }
 }
 
 void removeTeacher(tea t[])
@@ -159,16 +184,21 @@ void printTeacherClasses()
 void addSV(sv a[], sv r[])
 {
     int q;
+    char c[5];
     int p = 1;
-    printf("Number of new students: ");
-    scanf("%d",&q);
+    do{
+        printf("Number of new students: ");
+        scanf("%s",c);
+        if(!checkInput(c)) printf("Wrong input. Please retry!\n");
+    } while (!checkInput(c));
+    q = atoi(c);
     fp = fopen("student.data","a");
     int i,j;
     for(i = 0;i < q;i++){
         while(p != 0){
             p = 0;
             printf("ID: ");
-            scanf("%s",&a[i].id);
+            scanf("%s",a[i].id);
             for(j = 0;j < l;j++){
                 if (strcmp(a[i].id,r[j].id) == 0){
                     printf("ID Occupied! Please retry.\n");
@@ -226,7 +256,7 @@ void search(sv r[])
     printf("4. Search by Course name\n");
     printf("5. Back");
     while(true){
-        scanf("%s",&o);
+        scanf("%s",o);
         a = 0;
         if (strcmp(o,"1") == 0) {
             printf("Type ID: ");
@@ -290,11 +320,11 @@ void update(sv r[])
     printf("2. Update Name\n");
     printf("3. Update Semester\n");
     printf("4. Update Course name\n");
-    printf("5. Back");
+    printf("5. Back\n");
     scanf("%s",o);
     while(n == 0){
         printf("Type ID: ");
-        scanf("%s",&c);
+        scanf("%s",c);
         for(i = 0;i < l;i++) if (strcmp(r[i].id,c)==0) {
             k = i;
             n++;
@@ -328,16 +358,16 @@ void update(sv r[])
         else if (strcmp(o,"3") == 0){
             while(true){
                 printf("Type Updated Semester: ");
-                scanf("%s",&a);
-                if (atoi(a) == 0) printf("Only accept numbers. Please try again!\n");
-                if (atoi(a) > 1 || atoi(a) <= 8) break;
+                scanf("%s",a);
+                if (!checkInput(a)) {printf("Only accept numbers. Please try again!\n");continue;}
+                if(atoi(a) > 1 || atoi(a) <= 8) break;
                 else printf("Semester should be in range of 1 to 8. Please try again!\n");
             }
                 strcpy(r[k].semester,a);
         }
         else if (strcmp(o,"4") == 0){
             printf("Type Updated Course name: ");
-            scanf("%s",&a);
+            scanf("%s",a);
             strcpy(r[k].coursename,a);
         }
         else if (strcmp(o,"5") == 0){
@@ -352,7 +382,7 @@ void update(sv r[])
     fclose(fp);
 }
 
-void delete(sv r[])
+void deleteStudent(sv r[])
 {
     int i;
     char id[10];
@@ -411,12 +441,20 @@ void printStudents(cl class[], int i, sv r[])
     
 }
 
-void printAllClass(cl class[], sv r[])
+void printClass(cl class[], sv r[], acc all[])
 {
     int i;
-    for(i = 0;i < cline;i++){
-        printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
-        printStudents(class,i,r);
+    if (strcmp(perm,"0") == 0){
+        for(i = 0;i < cline;i++){
+            printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
+            printStudents(class,i,r);
+        }
+    }
+    if (strcmp(perm,"1") == 0){
+        for(i = 0;i < cline;i++) if (strcmp(all[accountIndex].id,class[i].teacher) == 0){
+            printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
+            printStudents(class,i,r);
+        }
     }
 }
 
@@ -432,35 +470,45 @@ void printClassToFile(cl class[])
 void addStudents(cl class[], int k, sv r[])
 {
     // Add teacher permission to request
-    int i;
+    int i,j;
+    int q;
+    char p[10];
     bool a = false;
     int b = 0;
     char c[20];
     char *token = strtok(class[k].students,".");
-    // Add loop to this function
-    while(!a || b == 0){
-        a = false;
-        b = 1;
-        printf("Student ID: ");
-        scanf("%s",c);
-        for(i = 0; i < l; i++) if (strcmp(c,r[i].id) == 0){
-            a = true;
-            break;
-        }
-        while(token != NULL){
-            if (strcmp(c,token) == 0){
-                printf("Student is already in the class. Please retry!\n");
-                b = 0;
+    do
+    {
+        printf("Number of student: ");
+        scanf("%s",p);
+        if (!checkInput(p)) printf("Invalid number. Please retry!\n");
+    } while (!checkInput(p));
+    q = atoi(p);
+    for(j = 0;j < q;j++){
+        while(!a || b == 0){
+            a = false;
+            b = 1;
+            printf("Student ID: ");
+            scanf("%s",c);
+            for(i = 0; i < l; i++) if (strcmp(c,r[i].id) == 0){
+                a = true;
                 break;
             }
-            token = strtok(NULL,".");   
+            while(token != NULL){
+                if (strcmp(c,token) == 0){
+                    printf("Student is already in the class. Please retry!\n");
+                    b = 0;
+                    break;
+                }
+                token = strtok(NULL,".");   
+            }
+            if (!a) printf("Student ID not found. Please retry!\n");
         }
-        if (!a) printf("Student ID not found. Please retry!\n");
+        getClassData(class);
+        strcat(class[k].students,".");
+        strcat(class[k].students,c);
+        printClassToFile(class);
     }
-    getClassData(class);
-    strcat(class[k].students,".");
-    strcat(class[k].students,c);
-    printClassToFile(class);
 }
 
 void deleteStudentsFromClass(cl class[], int k, sv r[])
@@ -610,15 +658,21 @@ bool passwordValidate(char c[])
     else {printf("Password must contain uppercase characters, numbers and special characters!\n");return false;}
 }
 
-void createAcc(acc all[])
+void createAcc(acc all[],sv r[],tea t[])
 {
     getchar();
     char d[30],a[30],b[30],s[10];
     int i;
     int c = 0;
-    printf("User ID: ");
-    fgets(d,sizeof(d),stdin);
-    d[strcspn(d,"\n")] = '\0';
+    bool q = false;
+        while(!q){
+        printf("User ID: ");
+        fgets(d,sizeof(d),stdin);
+        d[strcspn(d,"\n")] = '\0';
+        for(i = 0; i < l;i ++) if (strcmp(d,r[i].id) == 0) {q = true;break;}
+        for(i = 0; i < tline;i++) if (strcmp(d,t[i].nname) == 0) {q = true;break;}
+        printf("ID not available for teacher or student!\n");
+    }
     while(c == 0){
         c = 0;
         printf("Username: ");
@@ -870,67 +924,133 @@ int main()
     sv r[100];
     acc all[100];
     tea t[100];
-    getUserAccounts(all);
     char o[10];
-    do{
-        printf("1.Login\n");
-        printf("2.Register\n");
-        scanf("%s",o);
-        if (strcmp(o,"1") == 0) login(all,r,t);
-        else if (strcmp(o,"2") == 0) registers(all);
-        else printf("Wrong option. Please retry!\n");
-    } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0);
-    system("cls");
-    if (strcmp(perm,"0") == 0) {
-        printf("1.Student management\n");
-        printf("2.Teacher management\n");
-        printf("3.Class management\n");
-        printf("4.Account management\n");
-        printf("5.Logout\n");
-        scanf("%s",o);
-        if (strcmp(o,"1") == 0){
-            printf("1.Add students\n");
-            printf("2.Delete students\n");
-            printf("3.Modify students\n");
-            printf("4.Search students\n");
-            printf("5.Student reports\n");
-            printf("6.Back\n");
+    while(true){
+        getUserAccounts(all);
+        do{
+            printf("1.Login\n");
+            printf("2.Register\n");
+            printf("3.Exit\n");
             scanf("%s",o);
-        }
-        else if (strcmp(o,"2") == 0){
-            printf("1.Add students\n");
-            printf("2.Delete students\n");
-            printf("3.Back\n");
-            scanf("%s",o);
-        }
-        else if (strcmp(o,"3") == 0){
-            printf("1.Add class\n");
-            printf("2.Delete class\n");
-            printf("3.Modify class\n");
-            printf("4.Class reports\n");
-            printf("5.Back\n");
-            scanf("%s",o);
-        }
-        else if (strcmp(o,"4") == 0){
-            printf("1.Add account\n");
-            printf("2.Delete account\n");
-            printf("3.Modify account\n");
-            printf("4.Back\n");
-            scanf("%s",o);
-        }
-        else if (strcmp(o,"5") == 0){
-            logOut();
-        }
-    }
-    else if (strcmp(perm,"1") == 0) {
-        printf("1.Student management\n");
-        printf("2.Class management\n");
-        printf("3.Account management\n");
-        scanf("%s",o);
-    }
-    else if (strcmp(perm,"2") == 0) {
-        printf("1.Class management\n");
-        printf("2.Account management\n");
-        scanf("%s",o);
+            if (strcmp(o,"1") == 0) login(all,r,t);
+            else if (strcmp(o,"2") == 0) registers(all);
+            else if (strcmp(o,"3") == 0) exit(0);
+            else printf("Wrong option. Please retry!\n");
+        } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0 && strcmp(o,"3") != 0);
+        system("cls");
+        do{
+            if (strcmp(perm,"0") == 0) {
+                printf("1.Student management\n");
+                printf("2.Teacher management\n");
+                printf("3.Class management\n");
+                printf("4.Account management\n");
+                printf("5.Logout\n");
+                scanf("%s",o);
+                if (strcmp(o,"1") == 0){
+                    while(true){
+                        printf("1.Add students\n");
+                        printf("2.Delete students\n");
+                        printf("3.Modify students\n");
+                        printf("4.Search students\n");
+                        printf("5.Student reports\n");
+                        printf("6.Back\n");
+                        scanf("%s",o);
+                        getStudentData(r);
+                        if (strcmp(o,"1") == 0) addSV(a,r);
+                        else if (strcmp(o,"2") == 0) deleteStudent(r);
+                        else if (strcmp(o,"3") == 0) update(r);
+                        else if (strcmp(o,"4") == 0) search(r);
+                        else if (strcmp(o,"5") == 0) report(r);
+                        else if (strcmp(o,"6") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+                else if (strcmp(o,"2") == 0){
+                    while(true){
+                        printf("1.Add teacher\n");
+                        printf("2.Delete teacher\n");
+                        printf("3.Back\n");
+                        scanf("%s",o);
+                        getTeacherData(t);
+                        if (strcmp(o,"1") == 0) addTeacher(t);
+                        else if (strcmp(o,"2") == 0) removeTeacher(t);
+                        else if (strcmp(o,"3") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+                else if (strcmp(o,"3") == 0){
+                    while(true){
+                        printf("1.Add class\n");
+                        printf("2.Delete class\n");
+                        printf("3.Modify class\n");
+                        printf("4.Class reports\n");
+                        printf("5.Back\n");
+                        scanf("%s",o);
+                        getClassData(class);
+                        getTeacherData(t);
+                        getStudentData(r);
+                        if (strcmp(o,"1") == 0) addClass(r,t);
+                        else if (strcmp(o,"2") == 0) deleteClass(class);
+                        else if (strcmp(o,"3") == 0) modifyClass(class,r);
+                        else if (strcmp(o,"4") == 0) printClass(class,r,all);
+                        else if (strcmp(o,"5") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+                else if (strcmp(o,"4") == 0){
+                    while(true){
+                        printf("1.Add account\n");
+                        printf("2.Delete account\n");
+                        printf("3.Modify account\n");
+                        printf("4.Back\n");
+                        scanf("%s",o);
+                        getUserAccounts(all);
+                        if (strcmp(o,"1") == 0) createAcc(all,r,t);
+                        else if (strcmp(o,"2") == 0) removeAccount(all);
+                        else if (strcmp(o,"3") == 0) accountManagement(all);
+                        else if (strcmp(o,"4") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+                else if (strcmp(o,"5") == 0){
+                    logOut();
+                }
+            }
+            else if (strcmp(perm,"1") == 0) {
+                printf("1.Student management\n");
+                printf("2.Class management\n");
+                printf("3.Account management\n");
+                scanf("%s",o);
+                if (strcmp(o,"1") == 0){
+                    while(true){
+                        printf("1.Search students\n");
+                        printf("2.Back\n");
+                        scanf("%s",o);
+                        getStudentData(r);
+                        if (strcmp(o,"1") == 0) search(r);
+                        else if (strcmp(o,"2") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+                else if (strcmp(o,"2") == 0){
+                    while(true){
+                        printf("1.Modify class\n");
+                        printf("2.Class reports\n");
+                        printf("3.Back\n");
+                        scanf("%s",o);
+                        getClassData(class);
+                        if (strcmp(o,"1") == 0) modifyClass(class,r);
+                        else if (strcmp(o,"3") == 0) ;
+                        else if (strcmp(o,"2") == 0) break;
+                        else printf("Wrong option!\n");
+                    }
+                }
+            }
+            else if (strcmp(perm,"2") == 0) {
+                printf("1.Class management\n");
+                printf("2.Account management\n");
+                scanf("%s",o);
+            }
+        } while(strcmp(perm,"\0") != 0);
     }
 }

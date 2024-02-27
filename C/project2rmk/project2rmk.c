@@ -1,15 +1,4 @@
-//Note: Add clearscreen last.
-// 3.Looping and exiting the loop in login and register and also other functions can retry it.
-// 4.Add classes into the program.
-// 7.Add logout function
-// 8.Change permission of the teacher,admin and students
-// 11.Draw a database relationship diagram
-// 12.Add validation in every input
-// 14.Think about ID distribution
-// 15.To get out of loop, whenever user type exit, it will go back to previous menu.
-// 16.Add admin.noti
-// 17.Create a menu
-// 18.Make a pause at every function & make a loop to reuse the function without going back to the menu
+//Create a new format of account permission
 
 #include<stdio.h>
 #include<conio.h>
@@ -18,16 +7,7 @@
 #include<stdbool.h>
 #include <ctype.h>
 
-struct classdata{
-    char name[20];
-    char teacher[20];
-    char students[500];
-};
-struct teacher{
-    char nname[50];
-    char name[50];
-    char gmail[100];
-};
+
 
 struct student
 {
@@ -38,7 +18,6 @@ struct student
 };
 struct accounts
 {
-    char id[30];
     char username[20];
     char password[20];
     char perm[2];
@@ -46,14 +25,9 @@ struct accounts
 FILE *fp;
 int l = 0;
 int line = 0;
-int cline = 0;
-int tline = 0;
 int accountIndex;
-char perm[2];
-typedef struct classdata cl;
 typedef struct student sv;
 typedef struct accounts acc;
-typedef struct teacher tea;
 
 bool checkInput(char a[])
 {
@@ -63,120 +37,6 @@ bool checkInput(char a[])
 }
 
 
-//------------------------------------------------------------------------------------------------------------------------
-//                                                       Teacher functions
-
-void stringProcessing4(char c[],tea t[], int tline)
-{
-    sscanf(c,"%[^-]-%[^-]-%[^-\n]",t[tline].nname,t[tline].name,t[tline].gmail);
-}
-
-void getTeacherData(tea t[])
-{
-    fp = fopen("teacher.data","r");
-    char c[100];
-    int i,j;
-    while(fgets(c,sizeof(c),fp)!= NULL){
-        stringProcessing4(c,t,tline);
-        tline++;
-    }
-    fclose(fp);
-    //printf("%s-%s-%s",t[1].nname,t[1].name,t[1].gmail);
-}
-
-bool validateGmail(char c[])
-{
-    char name[20];
-    sscanf(c,"%[a-zA-Z0-9]@mail.com",name);
-    strcat(name,"@gmail.com");
-    if(strcmp(name,c) == 0) return true;
-    else return false;
-}
-
-void ucaseName(char a[])
-{
-    int i;
-    a[0] = toupper(a[0]);
-    for(i = 1;i < strlen(a);i++){
-        if (a[i] == ' ') a[i+1] = toupper(a[i+1]);
-    }
-}
-
-void addTeacher(tea t[])
-{
-    int n,i,j;
-    int p = 0;
-    int q;
-    char b[30],c[50],a[20],e[10],d[10];
-    do{
-        printf("Number of teacher: ");
-        scanf("%s",d);
-        if (!checkInput(d)) printf("Invalid number!\n");
-    } while (!checkInput(d));
-    q = atoi(d);
-    for (i = 0;i < q;i++) {
-        do{
-            p = 0;
-            printf("Input Nickname: ");
-            scanf("%s",a);
-            if (strchr(a,' ') != NULL) {printf("There should be no spaces in nickname. Please try again!\n");p++;}
-            for(j = 0;j < tline;j++) if (strcmp(a,t[i].nname) == 0) {
-                p++;
-                printf("Nickname occupied!\n");
-                break;
-            }
-        } while(p > 0);
-        getchar();
-        do{
-            printf("Input name: ");
-            fgets(b,sizeof(b),stdin);
-            if(strchr(b,' ') == NULL) printf("There should be some spaces in your name. Please try again!\n");
-        } while(strchr(b,' ') == NULL);
-        b[strcspn(b,"\n")] = '\0';
-        strlwr(b);
-        ucaseName(b);
-        do{
-            printf("Input gmail: ");
-            scanf("%s",c);
-            if(!validateGmail(c)) printf("Wrong gmail format. Please retry!\n");
-        } while (!validateGmail(c));
-        fp = fopen("teacher.data","a");
-        fprintf(fp,"%s-%s-%s\n",a,b,c);
-        fclose(fp);
-    }
-}
-
-void removeTeacher(tea t[])
-{
-    getchar();
-    int i,k;
-    int c = 0;
-    char a[20];
-    while (c == 0){
-        printf("Enter teacher name: ");
-        fgets(a,sizeof(a),stdin);
-        a[strcspn(a,"\n")] = '\0';
-        for(i = 0;i < tline;i++) if (strcmp(a,t[i].name) == 0) {k = i;c++;break;}
-        if (c != 0) break;
-        else printf("Teacher name not found. Please retry!\n");
-    } 
-    fp = fopen("teacher.data","w");
-    for(i = 0;i < tline;i++){
-        if (i == k) continue;
-        fprintf(fp,"%s-%s-%s\n",t[i].nname,t[i].name,t[i].gmail);
-    }
-    fclose(fp);
-}
-
-void printTeacherProfiles()
-{
-
-}
-
-void printTeacherClasses()
-{
-    
-}
 
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Student functions
@@ -406,214 +266,6 @@ void report(sv r[])
     }
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-//                                                       Class functions
-
-void stringProcessing3(char c[], cl class[], int cline)
-{
-    sscanf(c,"%[^-]-%[^-]-%[^-\n]",class[cline].name,class[cline].teacher,class[cline].students);
-}
-
-void getClassData(cl class[])
-{
-    fp = fopen("class.data","r");
-    char c[100];
-    int i,j;
-    cline = 0;
-    while(fgets(c,sizeof(c),fp)!= NULL){
-        stringProcessing3(c,class,cline);
-        cline++;
-    }
-    fclose(fp);
-    //printf("%s-%s-%s",class[0].name,class[0].teacher,class[0].students);
-}
-
-
-void printStudents(cl class[], int i, sv r[])
-{
-    int j;
-    char *token = strtok(class[i].students,".");
-    while (token != NULL)
-    {
-        for(j = 0;j < l;j++) if (strcmp(r[j].id,token)==0) printf("%s|%s|%s|%s\n",r[j].id,r[j].name,r[j].semester,r[j].coursename); 
-        token = strtok(NULL,".");
-    }
-    
-}
-
-void printClass(cl class[], sv r[], tea t[])
-{
-    int i;
-    if (strcmp(perm,"0") == 0){
-        for(i = 0;i < cline;i++){
-            printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
-            printStudents(class,i,r);
-        }
-    }
-}
-
-
-void printClassToFile(cl class[])
-{
-    int i;
-    fp = fopen("class.data","w");
-    for(i = 0;i < cline;i++) fprintf(fp,"%s-%s-%s\n",class[i].name,class[i].teacher,class[i].students);
-    fclose(fp);
-}
-
-void addStudents(cl class[], int k, sv r[])
-{
-    // Add teacher permission to request
-    int i,j;
-    int q;
-    char p[10];
-    bool a = false;
-    int b = 0;
-    char c[20];
-    char *token = strtok(class[k].students,".");
-    do
-    {
-        printf("Number of student: ");
-        scanf("%s",p);
-        if (!checkInput(p)) printf("Invalid number. Please retry!\n");
-    } while (!checkInput(p));
-    q = atoi(p);
-    for(j = 0;j < q;j++){
-        while(!a || b == 0){
-            a = false;
-            b = 1;
-            printf("Student ID: ");
-            scanf("%s",c);
-            for(i = 0; i < l; i++) if (strcmp(c,r[i].id) == 0){
-                a = true;
-                break;
-            }
-            while(token != NULL){
-                if (strcmp(c,token) == 0){
-                    printf("Student is already in the class. Please retry!\n");
-                    b = 0;
-                    break;
-                }
-                token = strtok(NULL,".");   
-            }
-            if (!a) printf("Student ID not found. Please retry!\n");
-        }
-        getClassData(class);
-        strcat(class[k].students,".");
-        strcat(class[k].students,c);
-        printClassToFile(class);
-    }
-}
-
-void deleteStudentsFromClass(cl class[], int k, sv r[])
-{
-    // Add teacher permission to request
-    cl new;
-    strcpy(new.students,"\0");
-    char c[20];
-    int i;
-    int a = 0;
-    while(a == 0){
-        printf("Input ID: ");
-        scanf("%s",c);
-        for(i = 0;i < l;i++) if (strcmp(c,r[i].id) == 0) {a++;break;}
-        if(a == 0) printf("Student is not in the class. Please retry!\n");
-    }
-    char *token = strtok(class[k].students,".");
-    while(token != NULL){
-        if (strcmp(token,c) == 0) {token = strtok(NULL,".");continue;}
-        strcat(new.students,token);
-        token = strtok(NULL,".");
-        if (token!= NULL) strcat(new.students,".");
-    }
-    strcpy(class[k].students,new.students);
-    if (class[k].students[strlen(class[k].students)-1] == '.') class[k].students[strlen(class[k].students)-1] = '\0';
-    printClassToFile(class);
-}
-
-void modifyClass(cl class[], sv r[])
-{
-    // Show all classes || search by class name and teacher name.
-    int i,k;
-    char o[5],c[5];
-    for(i = 0; i < cline; i++){
-        printf("%d.Class: %s\tTeacher: %s\n",i+1,class[i].name,class[i].teacher);
-    }
-    do{
-        printf("Select class: ");
-        scanf("%s",c);
-        k = atoi(c) - 1;
-        if (k > cline && k < 0) printf("Class %s unavailable. Please retry!",c);
-    } while (k > cline && k < 0);
-    do{
-        printf("1. Add students to class\n");
-        printf("2. Delete students from class\n");
-        printf("3. Back\n");
-        scanf("%s",o);
-        if (strcmp(o,"1") == 0) {
-            addStudents(class,k,r);
-        }
-        else if (strcmp(o,"2") == 0) {
-            deleteStudentsFromClass(class,k,r);
-        }
-        else if (strcmp(o,"3") == 0) {
-            break;
-        }
-        else printf("Wrong input. Please retry!\n");
-    } while (strcmp(o,"1") != 0 && (strcmp(o,"2") != 0));
-}
-
-void addClass(sv r[], tea t[])
-{
-    int i,n,j;
-    int q = 0;
-    bool p;
-    char a[20],b[20],c[100],d[20],k[10];
-    strcpy(c,"\0");
-    printf("Class name: ");
-    scanf("%s",a);
-    while(q == 0){
-        printf("Teacher in charge: ");
-        scanf("%s",b);
-        for(i = 0;i < tline;i++) if (strcmp(b,t[i].nname) == 0) {q++;break;}
-        if (q == 0) printf("Teacher not found. Please retry!\n");
-    }
-    printf("Number of student: ");
-    scanf("%s",k);
-    n = atoi(k);
-    for(i = 0;i < n;i++){
-        do
-        {
-            scanf("%s",d);
-            for(j = 0;j < l; j++) {
-                if (strcmp(d,r[j].id) == 0) {p = true;break;}
-            }
-            if (!p) printf("ID not found. Please retry!\n");
-        } while (!p);
-            strcat(c,d);
-        if(i!=n-1) strcat(c,".");
-    }
-    fp = fopen("class.data","a");
-    fprintf(fp,"%s-%s-%s\n",a,b,c);
-    fclose(fp);
-    cline++;
-}
-
-void deleteClass(cl class[])
-{
-    int i,k;
-    char a[20],b[20];
-    scanf("%s",a);
-    scanf("%s",b);
-    for(i = 0;i < cline;i++) if (strcmp(a,class[i].name) == 0 && strcmp(b,class[i].teacher) == 0) {k = i;break;}
-    fp = fopen("class.data","w");
-    for(i = 0;i < cline;i++){
-        if (i == k) continue;
-        fprintf(fp,"%s-%s-%s\n",class[i].name,class[i].teacher,class[i].students);
-    }
-    fclose(fp);
-}
-
 
 //------------------------------------------------------------------------------------------------------------------------
 //                                                     Login/register functions
@@ -739,7 +391,7 @@ void removeAccount(acc all[])
 }
 
 
-void login(acc all[],sv r[],tea t[])
+void login(acc all[])
 {
     getchar();
     char a[20],b[20];
@@ -913,11 +565,9 @@ void logOut()
 
 int main()
 {
-    cl class[100];
     sv a[100];
     sv r[100];
     acc all[100];
-    tea t[100];
     char o[10];
     while(true){
         getUserAccounts(all);
@@ -926,125 +576,11 @@ int main()
             printf("2.Register\n");
             printf("3.Exit\n");
             scanf("%s",o);
-            if (strcmp(o,"1") == 0) login(all,r,t);
+            if (strcmp(o,"1") == 0) login(all);
             else if (strcmp(o,"2") == 0) registers(all);
             else if (strcmp(o,"3") == 0) exit(0);
             else printf("Wrong option. Please retry!\n");
         } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0 && strcmp(o,"3") != 0);
         system("cls");
-        do{
-            if (strcmp(perm,"0") == 0) {
-                printf("1.Student management\n");
-                printf("2.Teacher management\n");
-                printf("3.Class management\n");
-                printf("4.Account management\n");
-                printf("5.Logout\n");
-                scanf("%s",o);
-                if (strcmp(o,"1") == 0){
-                    while(true){
-                        printf("1.Add students\n");
-                        printf("2.Delete students\n");
-                        printf("3.Modify students\n");
-                        printf("4.Search students\n");
-                        printf("5.Student reports\n");
-                        printf("6.Back\n");
-                        scanf("%s",o);
-                        getStudentData(r);
-                        if (strcmp(o,"1") == 0) addSV(a,r);
-                        else if (strcmp(o,"2") == 0) deleteStudent(r);
-                        else if (strcmp(o,"3") == 0) update(r);
-                        else if (strcmp(o,"4") == 0) search(r);
-                        else if (strcmp(o,"5") == 0) report(r);
-                        else if (strcmp(o,"6") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-                else if (strcmp(o,"2") == 0){
-                    while(true){
-                        printf("1.Add teacher\n");
-                        printf("2.Delete teacher\n");
-                        printf("3.Back\n");
-                        scanf("%s",o);
-                        getTeacherData(t);
-                        if (strcmp(o,"1") == 0) addTeacher(t);
-                        else if (strcmp(o,"2") == 0) removeTeacher(t);
-                        else if (strcmp(o,"3") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-                else if (strcmp(o,"3") == 0){
-                    while(true){
-                        printf("1.Add class\n");
-                        printf("2.Delete class\n");
-                        printf("3.Modify class\n");
-                        printf("4.Class reports\n");
-                        printf("5.Back\n");
-                        scanf("%s",o);
-                        getClassData(class);
-                        getTeacherData(t);
-                        getStudentData(r);
-                        if (strcmp(o,"1") == 0) addClass(r,t);
-                        else if (strcmp(o,"2") == 0) deleteClass(class);
-                        else if (strcmp(o,"3") == 0) modifyClass(class,r);
-                        else if (strcmp(o,"4") == 0) printClass(class,r,t);
-                        else if (strcmp(o,"5") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-                else if (strcmp(o,"4") == 0){
-                    while(true){
-                        printf("1.Add account\n");
-                        printf("2.Delete account\n");
-                        printf("3.Modify account\n");
-                        printf("4.Back\n");
-                        scanf("%s",o);
-                        getUserAccounts(all);
-                        if (strcmp(o,"1") == 0) createAcc(all,r,t);
-                        else if (strcmp(o,"2") == 0) removeAccount(all);
-                        else if (strcmp(o,"3") == 0) accountManagement(all);
-                        else if (strcmp(o,"4") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-                else if (strcmp(o,"5") == 0){
-                    logOut();
-                }
-            }
-            else if (strcmp(perm,"1") == 0) {
-                printf("1.Student management\n");
-                printf("2.Class management\n");
-                printf("3.Account management\n");
-                scanf("%s",o);
-                if (strcmp(o,"1") == 0){
-                    while(true){
-                        printf("1.Search students\n");
-                        printf("2.Back\n");
-                        scanf("%s",o);
-                        getStudentData(r);
-                        if (strcmp(o,"1") == 0) search(r);
-                        else if (strcmp(o,"2") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-                else if (strcmp(o,"2") == 0){
-                    while(true){
-                        printf("1.Modify class\n");
-                        printf("2.Class reports\n");
-                        printf("3.Back\n");
-                        scanf("%s",o);
-                        getClassData(class);
-                        if (strcmp(o,"1") == 0) modifyClass(class,r);
-                        else if (strcmp(o,"3") == 0) ;
-                        else if (strcmp(o,"2") == 0) break;
-                        else printf("Wrong option!\n");
-                    }
-                }
-            }
-            else if (strcmp(perm,"2") == 0) {
-                printf("1.Class management\n");
-                printf("2.Account management\n");
-                scanf("%s",o);
-            }
-        } while(strcmp(perm,"\0") != 0);
     }
 }

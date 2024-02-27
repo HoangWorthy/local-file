@@ -441,7 +441,7 @@ void printStudents(cl class[], int i, sv r[])
     
 }
 
-void printClass(cl class[], sv r[], acc all[])
+void printClass(cl class[], sv r[], )
 {
     int i;
     if (strcmp(perm,"0") == 0){
@@ -451,10 +451,7 @@ void printClass(cl class[], sv r[], acc all[])
         }
     }
     if (strcmp(perm,"1") == 0){
-        for(i = 0;i < cline;i++) if (strcmp(all[accountIndex].id,class[i].teacher) == 0){
-            printf("%d.Class: %s\nTeacher : %s\nStudents: \n",i+1,class[i].name,class[i].teacher);
-            printStudents(class,i,r);
-        }
+        for(i = 0;i < tline;i++) if (strcmp())
     }
 }
 
@@ -992,7 +989,7 @@ int main()
                         if (strcmp(o,"1") == 0) addClass(r,t);
                         else if (strcmp(o,"2") == 0) deleteClass(class);
                         else if (strcmp(o,"3") == 0) modifyClass(class,r);
-                        else if (strcmp(o,"4") == 0) printClass(class,r,all);
+                        else if (strcmp(o,"4") == 0) printClass(class,r,t);
                         else if (strcmp(o,"5") == 0) break;
                         else printf("Wrong option!\n");
                     }

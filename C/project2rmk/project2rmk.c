@@ -11,16 +11,18 @@
 
 struct student
 {
-    char id[10];
+    char sid[20];
+    char id[20];
     char name[50];
-    char semester[3];
-    char coursename[10];
+    bool gender;
+    char date[30];
+    char pnumber[20];
 };
 struct accounts
 {
     char username[20];
     char password[20];
-    char perm[2];
+    char perm[20];
 };
 FILE *fp;
 int l = 0;
@@ -41,8 +43,9 @@ bool checkInput(char a[])
 //------------------------------------------------------------------------------------------------------------------------
 //                                                       Student functions
 
-void addSV(sv a[], sv r[])
+void addSV(sv r[])
 {
+    sv a;
     int q;
     char c[5];
     int p = 1;
@@ -55,23 +58,23 @@ void addSV(sv a[], sv r[])
     fp = fopen("student.data","a");
     int i,j;
     for(i = 0;i < q;i++){
-        while(p != 0){
+        do{
             p = 0;
             printf("ID: ");
-            scanf("%s",a[i].id);
+            scanf("%s",a.id);
             for(j = 0;j < l;j++){
-                if (strcmp(a[i].id,r[j].id) == 0){
+                if (strcmp(a.id,r[j].id) == 0){
                     printf("ID Occupied! Please retry.\n");
                     p++;
                 }
             }
-        }
+        } while(!checkInput(a.id));
         getchar();
         printf("Name: ");
         fgets(a[i].name, sizeof(a[i].name), stdin);
         a[i].name[strcspn(a[i].name, "\n")] = '\0';
         while(true){
-            printf("Semester: ");
+            printf(": ");
             scanf("%s",&a[i].semester);
             if (atoi(a[i].semester) == 0) printf("Only accept numbers. Please try again!\n");
             if (atoi(a[i].semester) > 1 || atoi(a[i].semester) <= 8) break;
@@ -87,7 +90,7 @@ void addSV(sv a[], sv r[])
 
 void stringProcessing1(char c[],sv r[], int l)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].id,r[l].name,r[l].semester,r[l].coursename);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].sid,r[l].id,r[l].name,r[l].gender,r[l].date,r[l].pnumber);
 }
 
 void getStudentData(sv r[])
@@ -265,14 +268,12 @@ void report(sv r[])
         printf("%s | %s | %s | %s\n",r[i].id,r[i].name,r[i].semester,r[i].coursename); 
     }
 }
-
-
 //------------------------------------------------------------------------------------------------------------------------
 //                                                     Login/register functions
 
 void stringProcessing2(acc all[], char c[], int line)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-\n]",all[line].id,all[line].username,all[line].password,all[line].perm);
+    sscanf(c,"%[^-]-%[^-]-%[^-\n]",all[line].username,all[line].password,all[line].perm);
 }
 
 void getUserAccounts(acc all[])
@@ -304,7 +305,7 @@ bool passwordValidate(char c[])
     else {printf("Password must contain uppercase characters, numbers and special characters!\n");return false;}
 }
 
-void createAcc(acc all[],sv r[],tea t[])
+void createAcc(acc all[],sv r[])
 {
     getchar();
     char d[30],a[30],b[30],s[10];
@@ -565,22 +566,22 @@ void logOut()
 
 int main()
 {
-    sv a[100];
     sv r[100];
     acc all[100];
-    char o[10];
-    while(true){
-        getUserAccounts(all);
-        do{
-            printf("1.Login\n");
-            printf("2.Register\n");
-            printf("3.Exit\n");
-            scanf("%s",o);
-            if (strcmp(o,"1") == 0) login(all);
-            else if (strcmp(o,"2") == 0) registers(all);
-            else if (strcmp(o,"3") == 0) exit(0);
-            else printf("Wrong option. Please retry!\n");
-        } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0 && strcmp(o,"3") != 0);
-        system("cls");
-    }
+    // char o[10];
+    // while(true){
+    //     getUserAccounts(all);
+    //     do{
+    //         printf("1.Login\n");
+    //         printf("2.Register\n");
+    //         printf("3.Exit\n");
+    //         scanf("%s",o);
+    //         if (strcmp(o,"1") == 0) login(all);
+    //         else if (strcmp(o,"2") == 0) registers(all);
+    //         else if (strcmp(o,"3") == 0) exit(0);
+    //         else printf("Wrong option. Please retry!\n");
+    //     } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0 && strcmp(o,"3") != 0);
+    //     system("cls");
+    // }
+    getStudentData(r);
 }

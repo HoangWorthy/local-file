@@ -12,7 +12,6 @@
 struct student
 {
     char sid[20];
-    char id[20];
     char name[50];
     bool gender;
     char date[30];
@@ -45,6 +44,7 @@ bool checkInput(char a[])
 
 void addSV(sv r[])
 {
+    int i,j;
     sv a;
     int q;
     char c[5];
@@ -55,42 +55,22 @@ void addSV(sv r[])
         if(!checkInput(c)) printf("Wrong input. Please retry!\n");
     } while (!checkInput(c));
     q = atoi(c);
-    fp = fopen("student.data","a");
-    int i,j;
     for(i = 0;i < q;i++){
-        do{
-            p = 0;
-            printf("ID: ");
-            scanf("%s",a.id);
-            for(j = 0;j < l;j++){
-                if (strcmp(a.id,r[j].id) == 0){
-                    printf("ID Occupied! Please retry.\n");
-                    p++;
-                }
-            }
-        } while(!checkInput(a.id));
+        printf("Student ID: ");
+        scanf("%s",a.sid);
         getchar();
-        printf("Name: ");
-        fgets(a[i].name, sizeof(a[i].name), stdin);
-        a[i].name[strcspn(a[i].name, "\n")] = '\0';
-        while(true){
-            printf(": ");
-            scanf("%s",&a[i].semester);
-            if (atoi(a[i].semester) == 0) printf("Only accept numbers. Please try again!\n");
-            if (atoi(a[i].semester) > 1 || atoi(a[i].semester) <= 8) break;
-            else printf("Semester should be in range of 1 to 8. Please try again!\n");
-        }
-        printf("Course Name: ");
-        scanf("%s",&a[i].coursename);
-        fprintf(fp,"%s-%s-%s-%s\n",a[i].id,a[i].name,a[i].semester,a[i].coursename);
+        printf("Student name: ");
+        fgets(a.name, sizeof(a.name), stdin);
+        a.name[strcspn(a.name, "\n")] = '\0';
+        printf("Date of birth(DD/MM/YY): ");
+        scanf("%s",a.date);
+        
     }
-    printf("Successfully!\n");
-    fclose(fp);
 }
 
 void stringProcessing1(char c[],sv r[], int l)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].sid,r[l].id,r[l].name,r[l].gender,r[l].date,r[l].pnumber);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].sid,r[l].name,r[l].gender,r[l].date,r[l].pnumber);
 }
 
 void getStudentData(sv r[])

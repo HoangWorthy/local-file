@@ -1,16 +1,14 @@
-#include <stdio.h>
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
 #include <ctype.h>
-#include <string.h>
- 
-void ucaseName(char a[])
-{
-    int i;
-    toupper(a[0]);
-    printf("%s",a);
-}
-int main()
-{
-    char a[] = {"xin chao"};
-    ucaseName(a);
-    return 0;
+
+int main()         
+{  int n, m;
+   scanf("%d,%d",&n, &m);
+   printf("%d, %d", n, m);
+   getch();
+   return 1;
 }

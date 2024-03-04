@@ -1,13 +1,13 @@
-//Create a new format of account permission
-//Add age validation
+// 3/4/24: Added search students with filter options 
 
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<stdbool.h>
-#include <ctype.h>
-#include <unistd.h>
+#include<ctype.h>
+#include<unistd.h>
+#include<windows.h>
 
 
 struct student
@@ -37,6 +37,23 @@ int line = 0;
 int accountIndex;
 typedef struct student sv;
 typedef struct accounts acc;
+
+// Function to get the width of the terminal
+int getTerminalWidth() {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return csbi.dwSize.X;
+}
+
+// Function to print centered text
+void printCentered(const char *text) {
+    int width = getTerminalWidth();
+    int padding = (width - strlen(text)) / 2;
+    for (int i = 0; i < padding; i++) {
+        putchar(' ');
+    }
+    printf("%s", text);
+}
 
 bool checkInput(char a[])
 {
@@ -347,17 +364,17 @@ void login(acc all[])
     int k = 0;
     bool c = false;
     while(!c){
-        printf("-----------Login------------\n");
+        printCentered("-----------Login------------\n");
         k = 0;
-        printf("Username: ");
+        printCentered("Username: ");
         scanf("%s",a);
-        printf("Password: ");
+        printCentered("Password: ");
         scanf("%s",b);
         for(i = 0;i < line;i++){ 
             if (strcmp(a,all[i].username)==0) k++;
             if (strcmp(a,all[i].username)==0 && strcmp(b,all[i].password) != 0){
                 system("cls");
-                printf("Wrong password!\n");
+                printCentered("Wrong password!\n");
                 sleep(1);
                 system("cls");
                 break;
@@ -366,7 +383,7 @@ void login(acc all[])
                 c = true;
                 accountIndex = i;
                 system("cls");
-                printf("Login successfully!\n");
+                printCentered("Login successfully!\n");
                 sleep(1);
                 break;
             }
@@ -824,8 +841,9 @@ void search(sv r[])
         printf("2. Search by Name\n");
         printf("3. Search by Phone number\n");
         printf("4. Search by Date of birth\n");
-        printf("5. Show all students\n");
-        printf("6. Back\n");
+        printf("5. Search by filters\n");
+        printf("6. Show all students\n");
+        printf("7. Back to menu\n");
         scanf("%s",o);
         if (strcmp(o,"exit") == 0) return;
         a = 0;
@@ -891,9 +909,47 @@ void search(sv r[])
         
         }
         else if (strcmp(o,"5") == 0) {
-            report(r);
+            system("cls");
+            sv new;
+            getchar();
+            printf("ID (Enter to skip): ");
+            fgets(new.sid,sizeof(new.sid),stdin);
+            new.sid[strcspn(new.sid,"\n")] = '\0';
+            if (strcmp(new.sid,"exit") == 0) return;
+            printf("Name (Enter to skip): ");
+            fgets(new.name,sizeof(new.name),stdin);
+            new.name[strcspn(new.name,"\n")] = '\0';
+            if (strcmp(new.name,"exit") == 0) return;
+            printf("Gender (male/female) (Enter to skip): ");
+            fgets(new.gender,sizeof(new.gender),stdin);
+            new.gender[strcspn(new.gender,"\n")] = '\0';
+            if (strcmp(new.gender,"exit") == 0) return;
+            printf("Date of birth (Enter to skip): ");
+            fgets(new.date,sizeof(new.date),stdin);
+            new.date[strcspn(new.date,"\n")] = '\0';
+            if (strcmp(new.date,"exit") == 0) return;
+            printf("Phone number (Enter to skip): ");
+            fgets(new.pnumber,sizeof(new.pnumber),stdin);
+            new.pnumber[strcspn(new.pnumber,"\n")] = '\0';
+            if (strcmp(new.pnumber,"exit") == 0) return;
+            int found = 0;
+            for(i = 0; i < l; i++) {
+                if((new.sid[0] == '\0' || strstr(r[i].sid,new.sid) != NULL) &&
+                (new.name[0] == '\0' || strstr(r[i].name,new.name) != NULL) &&
+                (new.gender[0] == '\0' || strcmp(r[i].gender,new.gender) == 0) &&
+                (new.date[0] == '\0' || strstr(r[i].date,new.date) != NULL) &&
+                (new.pnumber[0] == '\0' || strstr(r[i].pnumber,new.pnumber) != NULL)) {
+                    printf("%s | %s | %s | %s | %s\n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber); 
+                    found++;
+                }
+            }
+            if (found == 0) printf("No student found!\n");
+            getch();
         }
         else if (strcmp(o,"6") == 0) {
+            report(r);
+        }
+        else if (strcmp(o,"7") == 0) {
             break;
         }
         else printf("Wrong. Please retry!\n");
@@ -1043,8 +1099,9 @@ void deleteStudent(sv r[])
         c = 0;
         while(true){
                     n = 0;
-                    printf("Type ID (type 0 to stop): ");
-                    scanf("%s",id);
+                    printf("Type ID (enter to stop): ");
+                    fgets(id,sizeof(id),stdin);
+                    id[strcspn(id,"\n")] = '\0';
                     if (strcmp(id,"exit") == 0) return;
                     if (strcmp(id,"0") == 0) break;
                     for(i = 0;i < l;i++) if (strcmp(r[i].sid,id)==0) {
@@ -1104,8 +1161,11 @@ int main()
         getUserAccounts(all);
         system("cls");
         do{
-            printf("1.Login\n");
-            printf("2.Exit\n");
+            printCentered("Welcome to the Student Management System!\n");
+            printCentered("------------------------------------------\n");
+            printCentered("1.Login\n");
+            printCentered("2.Exit\n");
+            printCentered("Enter your choice: ");
             scanf("%s",o);
             if (strcmp(o,"1") == 0) login(all);
             else if (strcmp(o,"2") == 0) exit(0);
@@ -1123,7 +1183,9 @@ int main()
             printf("7.Delete Account\n");
             printf("8.Show Account\n");
             printf("9.Logout\n");
+            printf("----------------------------------------\n");
             printf("Note: If you want to go back to the menu immediately, type 'exit'\n");
+            printf("Enter your choice: ");
             scanf("%s",o);
             getStudentData(r);
             getUserAccounts(all);

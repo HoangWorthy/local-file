@@ -822,7 +822,7 @@ void report(sv r[])
 {
     int i;
     for(i = 0; i < l; i++){
-        printf("%s | %s | %s | %s | %s\n",r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber); 
+        printf("%d | %s | %s | %s | %s | %s\n",i+1,r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber); 
     }
     getch();
 }
@@ -1089,53 +1089,36 @@ void update(sv r[])
 void deleteStudent(sv r[])
 {
     system("cls");
-    int i;
+    int i,j;
     int n = 0;
-    int c = 0;
-    char id[20],o[10];
-    int count;
+    char b[5],c[5],d[10];
+    char a[20][20],o[5];
     do{
-        int b[20];
-        c = 0;
+        report(r);
+        getchar();
         while(true){
-                    n = 0;
-                    printf("Type ID (enter to stop): ");
-                    fgets(id,sizeof(id),stdin);
-                    id[strcspn(id,"\n")] = '\0';
-                    if (strcmp(id,"exit") == 0) return;
-                    if (strcmp(id,"0") == 0) break;
-                    for(i = 0;i < l;i++) if (strcmp(r[i].sid,id)==0) {
-                        n++;
-                        b[c] = i;
-                        c++;
-                        break;
-                    }
-                    if (n == 0) printf("ID not found\n");
+            printf("Delete number (enter to stop): ");
+            fgets(a[n],sizeof(a[n]),stdin);
+            if (strcmp(a[n],"\n") == 0) break;
+            a[n][strcspn(a[n],"\n")] = '\0';
+            n++;
         }
-        printf("Are you sure to delete below student?(Y/N)\n");
-        for(i = 0;i < c;i++){
-                printf("%s\t%s\t%s\t%s\t%s\n",r[b[i]].sid,r[b[i]].name,r[b[i]].gender,r[b[i]].date,r[b[i]].pnumber); 
+        fp = fopen("student.data","w");
+        for(i = 0;i < n;i++){
+            sscanf(a[i],"%[0-9]-%[0-9]",b,c);
+            strcpy(d,b);
+            if(strcmp(c,"\0") != 0){
+                strcat(d,"-");
+                strcat(d,c);
             }
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
-        }
-        if (strcmp(o,"Y") == 0){
-            bubbleSort(b,c);
-            fp = fopen("student.data","w");
-            count = 0;
-            for(i = 0;i < l;i++){
-                if (b[count] == i) {count++;printf("%d\n",b[count]);continue;}
+            if (strcmp(a[i],d) != 0) {("Failed to delete number %s!\n",a[i]);continue;}
+            for(j = 0;j < l;j++){
+                if (j >= min(atoi(b),atoi(c)) && j <= max(atoi(b),atoi(c))) continue;
                 fprintf(fp,"%s-%s-%s-%s-%s\n",r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber);
             }
-            fclose(fp);
-            l -= c;
-            system("cls");
-            printf("Delete successfully!");
-            sleep(1);
-            system("cls");
         }
+        fclose(fp);
+
         printf("Do you want to continue deleting?(Y/N)\n");
         while(scanf("%s",o)){
             if (strcmp(o,"exit") == 0) return;

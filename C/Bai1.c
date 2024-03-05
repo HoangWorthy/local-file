@@ -6,15 +6,10 @@
 #include <ctype.h>
 #include <unistd.h>
 
-void someFunction() {
-    printf("Inside someFunction\n");
-    return; // Exit the function
-    printf("This line will not be executed\n");
-}
 
 int main() {
-    printf("Start of main\n");
-    someFunction();
-    printf("End of main\n");
-    return 0;
+    char a[] = {"1"};
+    char b[5],c[5];
+    sscanf(a,"%[0-9]-%[0-9]",b,c);
+    printf("%s-%s",b,c);
 }

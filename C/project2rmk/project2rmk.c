@@ -47,9 +47,10 @@ int getTerminalWidth() {
 
 // Function to print centered text
 void printCentered(const char *text) {
+	int i;
     int width = getTerminalWidth();
     int padding = (width - strlen(text)) / 2;
-    for (int i = 0; i < padding; i++) {
+    for (i= 0; i < padding; i++) {
         putchar(' ');
     }
     printf("%s", text);
@@ -132,6 +133,29 @@ bool passwordValidate(char c[])
     if (a > 0 && b > 0 && d > 0) return true;
     else {printf("Password must contain uppercase characters, numbers and special characters!\n");return false;}
 }
+
+
+void showAccount(acc all[])
+{
+    system("cls");
+    int i;
+    for(i = 0;i < line;i++) {
+        printf("-----------------%d----------------\n",i+1);
+        printf("Username: %s\n",all[i].username);
+        printf("Password: %s\n",all[i].password);
+        printf("--------Permission-------\n");
+        printf("1.Add student: %s\n", all[i].add ? "Allowed" : "Denied");
+        printf("2.Update student: %s\n", all[i].update ? "Allowed" : "Denied");
+        printf("3.Delete student: %s\n", all[i].delete ? "Allowed" : "Denied");
+        printf("4.Search student: %s\n", all[i].search ? "Allowed" : "Denied");
+        printf("5.Create Account: %s\n", all[i].createacc ? "Allowed" : "Denied");
+        printf("6.Manage Account: %s\n", all[i].manageacc ? "Allowed" : "Denied");
+        printf("7.Delete Account: %s\n", all[i].deleteacc ? "Allowed" : "Denied");
+        printf("8.Show Account: %s\n", all[i].showacc ? "Allowed" : "Denied");
+        printf("\n");
+    }
+}
+
 
 void createAcc(acc all[])
 {
@@ -240,120 +264,73 @@ void createAcc(acc all[])
     printf("Exiting to menu...");
     sleep(1);
 }
-//Fix removeaccount() to be the same as deletestudent();
 
 void removeAccount(acc all[])
 {
-    int i;
-    int n = 0;
-    int c = 0;
-    char id[20],o[10];
-    int count;
+    int i,j;
+    char a[20][20],o[5];
     do{
+        getUserAccounts(all);
         system("cls");
-        int b[20];
-        c = 0;
+        if (!(strcmp(o,"Y") == 0)) getchar();
+        for(i = 0;i < line;i++){
+            printf("%d. Username: %s\n",i+1,all[i].username);
+        }
+        bool cinput = false;
+        int n = 0;
         while(true){
-                    n = 0;
-                    printf("Type username (type 0 to stop): ");
-                    scanf("%s",id);
-                    if (strcmp(id,"exit") == 0) return;
-                    if (strcmp(id,"0") == 0) break;
-                    for(i = 0;i < l;i++) if (strcmp(all[i].username,id)==0) {
-                        n++;
-                        b[c] = i;
-                        c++;
-                        break;
-                    }
-                    if (n == 0) printf("Username not found!\n");
-        }
-        printf("Are you sure to delete below student?(Y/N)\n");
-        for(i = 0;i < c;i++){
-                printf("Username: %s | Password: %s\n",all[b[i]].username,all[b[i]].password); 
+            printf("Delete number (enter to stop): ");
+            fgets(a[n],sizeof(a[n]),stdin);
+            if (strcmp(a[n],"\n") == 0) break;
+            a[n][strcspn(a[n],"\n")] = '\0';
+            for(i = 0; i < strlen(a[n]);i++){
+                if (isalpha(a[n][i])!= 0) {cinput = true;break;}
             }
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
+            n++;
         }
-        if (strcmp(o,"Y") == 0){
-            bubbleSort(b,c);
+        if (!cinput){
             fp = fopen("user.data","w");
-            count = 0;
-            for(i = 0;i < line;i++){
-                if (b[count] == i) {count++;printf("%d\n",b[count]);continue;}
-                fprintf(fp,"%s-%s-%d-%d-%d-%d-%d-%d-%d-%d\n",all[i].username,all[i].password,all[i].add,all[i].update,all[i].delete,all[i].search,all[i].createacc,all[i].manageacc,all[i].deleteacc,all[i].showacc);
+            for (i = 0; i < line; i++) {
+                bool delete_flag = false;
+                for (j = 0; j < n; j++) {
+                    char c[5],b[5];
+                    if(strchr(a[j],'-') != NULL){
+                        sscanf(a[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",b,c);
+                        if(i+1 >= min(atoi(b),atoi(c)) && i+1 <= max(atoi(b),atoi(c))) {delete_flag = true;break;}
+                    } 
+                    else {
+                        if (i+1 == atoi(a[j])) {delete_flag = true;break;}
+                    }
+                }
+                if (!delete_flag)
+                    fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",all[i].username,all[i].password,all[i].add,all[i].update,all[i].delete,all[i].search,all[i].createacc,all[i].manageacc,all[i].deleteacc,all[i].showacc);
             }
             fclose(fp);
-            l -= c;
-            system("cls");
-            printf("Delete successfully!");
-            sleep(1);
-            system("cls");
         }
-        printf("Do you want to continue deleting?(Y/N)\n");
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
+        if (cinput) {
+            system("cls");
+            printf("Error deleting, please input the correct format!\n");
+            sleep(1);
+            strcpy(o,"Y");
+        }
+        else{
+            system("cls");
+            printf("Delete successfully!\n");
+            line-=n;
+            printf("Do you want to continue deleting?(Y/N)\n");
+            while(true){
+                scanf("%s",o);
+                if (strcmp(o,"exit") == 0) return;
+                if (strcmp(o,"Y") == 0) break;
+                else if (strcmp(o,"N") == 0) break;
+            }
+            getchar();
         }
     }while(strcmp(o,"Y") == 0);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
 }
-
-/*
-void removeAccount(acc all[])
-{
-    system("cls");
-    int i,k,q,j;
-    int c = 0;
-    char a[20],o[5],d[5];
-    do{
-        while (true){
-            c = 0;
-            do{
-                printf("Enter username(type '0' to stop): ");
-                scanf("%s",a);
-                if (strcmp(d,"exit") == 0) return;
-
-            while(strcmp(a,"0") != 0);
-            system("cls");
-            printf("You are about to delete accounts below: \n");
-            printf("Username: %s | Password: %s\n",all[k].username,all[k].password);
-            while(scanf("%s",o)){
-                if (strcmp(o,"exit") == 0) return;
-                if (strcmp(o,"Y") == 0) break;
-                else if (strcmp(o,"N") == 0) break;
-            }
-            if (strcmp(o,"Y") == 0){
-                fp = fopen("user.data","w");
-                for(i = 0;i < line;i++){
-                    if (i == k) continue;
-                    fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",all[i].username,all[i].password,all[i].add,all[i].update,all[i].delete,all[i].search,all[i].createacc,all[i].manageacc,all[i].deleteacc,all[i].showacc);
-                }
-                fclose(fp);
-                system("cls");
-                printf("Delete successfully!\n");
-                sleep(1);
-                system("cls");
-                line--;
-                break;
-            }
-        }
-        printf("Do you want to continue deleting?(Y/N)\n");
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
-        }
-    }while(strcmp(o,"Y") == 0);
-    system("cls");
-    printf("Exiting back to menu...\n");
-    sleep(1);
-}
-*/
 
 void login(acc all[])
 {
@@ -388,7 +365,7 @@ void login(acc all[])
                 break;
             }
         }
-        if (k == 0) {system("cls");printf("Username not found!\n");sleep(1);system("cls");}
+        if (k == 0) {system("cls");printCentered("Username not found!\n");sleep(1);system("cls");}
     }
 }
 
@@ -571,28 +548,6 @@ void accountManagement(acc all[])
         }
         else {printf("Wrong option. Please try again!\n");continue;}
     }
-}
-
-void showAccount(acc all[])
-{
-    system("cls");
-    int i;
-    for(i = 0;i < line;i++) {
-        printf("-----------------%d----------------\n",i+1);
-        printf("Username: %s\n",all[i].username);
-        printf("Password: %s\n",all[i].password);
-        printf("-----------------Permission----------------\n");
-        printf("1.Add student: %s\n", all[i].add ? "Allowed" : "Denied");
-        printf("2.Update student: %s\n", all[i].update ? "Allowed" : "Denied");
-        printf("3.Delete student: %s\n", all[i].delete ? "Allowed" : "Denied");
-        printf("4.Search student: %s\n", all[i].search ? "Allowed" : "Denied");
-        printf("5.Create Account: %s\n", all[i].createacc ? "Allowed" : "Denied");
-        printf("6.Manage Account: %s\n", all[i].manageacc ? "Allowed" : "Denied");
-        printf("7.Delete Account: %s\n", all[i].deleteacc ? "Allowed" : "Denied");
-        printf("8.Show Account: %s\n", all[i].showacc ? "Allowed" : "Denied");
-        printf("\n");
-    }
-    getch();
 }
 
 void modifyAccount(acc all[])
@@ -824,7 +779,6 @@ void report(sv r[])
     for(i = 0; i < l; i++){
         printf("%d | %s | %s | %s | %s | %s\n",i+1,r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber); 
     }
-    getch();
 }
 
 void search(sv r[])
@@ -948,6 +902,7 @@ void search(sv r[])
         }
         else if (strcmp(o,"6") == 0) {
             report(r);
+            getch();
         }
         else if (strcmp(o,"7") == 0) {
             break;
@@ -1078,7 +1033,7 @@ void update(sv r[])
             }
         }
         else if (strcmp(o,"2") == 0) search(r);
-        else if (strcmp(o,"3") == 0) report(r);
+        else if (strcmp(o,"3") == 0) {report(r);getch();}
         else if (strcmp(o,"4") == 0) {
             break;
         }
@@ -1088,42 +1043,61 @@ void update(sv r[])
 
 void deleteStudent(sv r[])
 {
-    system("cls");
     int i,j;
-    int n = 0;
-    char b[5],c[5],d[10];
     char a[20][20],o[5];
     do{
+        system("cls");
+        getStudentData(r);
+        if (!(strcmp(o,"Y") == 0)) getchar();
         report(r);
-        getchar();
+        bool cinput = false;
+        int n = 0;
         while(true){
             printf("Delete number (enter to stop): ");
             fgets(a[n],sizeof(a[n]),stdin);
             if (strcmp(a[n],"\n") == 0) break;
             a[n][strcspn(a[n],"\n")] = '\0';
+            for(i = 0; i < strlen(a[n]);i++){
+                if (isalpha(a[n][i])!= 0) {cinput = true;break;}
+            }
             n++;
         }
-        fp = fopen("student.data","w");
-        for(i = 0;i < n;i++){
-            sscanf(a[i],"%[0-9]-%[0-9]",b,c);
-            strcpy(d,b);
-            if(strcmp(c,"\0") != 0){
-                strcat(d,"-");
-                strcat(d,c);
+        if (!cinput){
+            fp = fopen("student.data","w");
+            for (i = 0; i < l; i++) {
+                bool delete_flag = false;
+                for (j = 0; j < n; j++) {
+                    char c[5],b[5];
+                    if(strchr(a[j],'-') != NULL){
+                        sscanf(a[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",b,c);
+                        if(i+1 >= min(atoi(b),atoi(c)) && i+1 <= max(atoi(b),atoi(c))) {delete_flag = true;break;}
+                    } 
+                    else {
+                        if (i+1 == atoi(a[j])) {delete_flag = true;break;}
+                    }
+                }
+                if (!delete_flag)
+                    fprintf(fp, "%s-%s-%s-%s-%s\n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber);
             }
-            if (strcmp(a[i],d) != 0) {("Failed to delete number %s!\n",a[i]);continue;}
-            for(j = 0;j < l;j++){
-                if (j >= min(atoi(b),atoi(c)) && j <= max(atoi(b),atoi(c))) continue;
-                fprintf(fp,"%s-%s-%s-%s-%s\n",r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber);
-            }
+            fclose(fp);
         }
-        fclose(fp);
-
-        printf("Do you want to continue deleting?(Y/N)\n");
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
+        if (cinput) {
+            system("cls");
+            printf("Error deleting, please input the correct format!\n");
+            sleep(1);
+            strcpy(o,"Y");
+        }
+        else{
+            system("cls");
+            printf("Delete successfully!\n");
+            l-=n;
+            printf("Do you want to continue deleting?(Y/N)\n");
+            while(scanf("%s",o)){
+                if (strcmp(o,"exit") == 0) return;
+                if (strcmp(o,"Y") == 0) break;
+                else if (strcmp(o,"N") == 0) break;
+            }
+            getchar();
         }
     }while(strcmp(o,"Y") == 0);
     system("cls");
@@ -1140,56 +1114,119 @@ int main()
     sv r[100];
     acc all[100];
     char o[10];
+    char choice;
+    int option = 1;
+    int choice_student = 1; 
+    int choice_account = 1; 
+    int column = 1;
+    char ch;
     while(true){
         getUserAccounts(all);
-        system("cls");
-        do{
+        do {
+
+            system("cls");
+
             printCentered("Welcome to the Student Management System!\n");
             printCentered("------------------------------------------\n");
-            printCentered("1.Login\n");
-            printCentered("2.Exit\n");
-            printCentered("Enter your choice: ");
-            scanf("%s",o);
-            if (strcmp(o,"1") == 0) login(all);
-            else if (strcmp(o,"2") == 0) exit(0);
-            else printf("Wrong option. Please retry!\n");
-        } while(strcmp(o,"1") != 0 && strcmp(o,"2") != 0);
-        while(true){
+            if (option == 1)
+                printCentered("-> Login\n");
+            else
+                printCentered("   Login\n");
+            if (option == 2)
+                printCentered("-> Exit\n");
+            else
+                printCentered("   Exit\n");
+
+            choice = getch();
+            switch (choice) {
+                case 72:
+                    option = (option == 1) ? 2 : 1;
+                    break;
+                case 80:
+                    option = (option == 2) ? 1 : 2;
+                    break;
+            }
+            if (choice == 13) {
+                if (option == 1)
+                    login(all);
+                else if (option == 2)
+                    exit(0);
+                break;
+            }
+
+        } while (true);
+        while (true) {
             system("cls");
             printf("----------------Features--------------\n");
-            printf("1.Add student\n");
-            printf("2.Update student\n");
-            printf("3.Delete student\n");
-            printf("4.Search student\n");
-            printf("5.Create Account\n");
-            printf("6.Manage Account\n");
-            printf("7.Delete Account\n");
-            printf("8.Show Account\n");
-            printf("9.Logout\n");
+            printf("Student\t\t\t\tAccount\n");
+
+            if (choice_student == 1 && column == 1) printf("[X] Add student");
+            else printf("Add student");
+
+            if (choice_account == 1 && column == 2) printf("\t\t\t[X] Create Account\n");
+            else printf("\t\t\tCreate Account\n");
+
+            if (choice_student == 2 && column == 1) printf("[X] Update student");
+            else printf("Update student");
+
+            if (choice_account == 2 && column == 2) printf("\t\t\t[X] Manage Account\n");
+            else if (choice_student != 2) printf("\t\t\tManage Account\n");
+            else if (choice_student == 2) printf("\t\tManage Account\n");
+
+            if (choice_student == 3 && column == 1) printf("[X] Delete student");
+            else printf("Delete student");
+            
+            if (choice_account == 3 && column == 2) printf("\t\t\t[X] Delete Account\n");
+            else if (choice_student != 3) printf("\t\t\tDelete Account\n");
+            else if (choice_student == 3) printf("\t\tDelete Account\n");
+
+            if (choice_student == 4 && column == 1) printf("[X] Search student");
+            else printf("Search student");
+
+            if (choice_account == 4 && column == 2) printf("\t\t\t[X] Show Account\n");
+            else if (choice_student != 4) printf("\t\t\tShow Account\n");
+            else if (choice_student == 4) printf("\t\tShow Account\n");
+
             printf("----------------------------------------\n");
-            printf("Note: If you want to go back to the menu immediately, type 'exit'\n");
-            printf("Enter your choice: ");
-            scanf("%s",o);
-            getStudentData(r);
-            getUserAccounts(all);
-            if (strcmp(o,"1") == 0 && all[accountIndex].add) addStudent(r);
-            else if (strcmp(o,"1") == 0 && !all[accountIndex].add) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"2") == 0 && all[accountIndex].update) update(r);
-            else if (strcmp(o,"2") == 0 && !all[accountIndex].update) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"3") == 0 && all[accountIndex].delete) deleteStudent(r);
-            else if (strcmp(o,"3") == 0 && !all[accountIndex].delete) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"4") == 0 && all[accountIndex].search) search(r);
-            else if (strcmp(o,"4") == 0 && !all[accountIndex].search) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"5") == 0 && all[accountIndex].createacc) createAcc(all);
-            else if (strcmp(o,"5") == 0 && !all[accountIndex].createacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"6") == 0 && all[accountIndex].manageacc) accountManagement(all);
-            else if (strcmp(o,"6") == 0 && !all[accountIndex].manageacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"7") == 0 && all[accountIndex].deleteacc) removeAccount(all);
-            else if (strcmp(o,"7") == 0 && !all[accountIndex].deleteacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"8") == 0 && all[accountIndex].showacc) showAccount(all);
-            else if (strcmp(o,"8") == 0 && !all[accountIndex].showacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
-            else if (strcmp(o,"9") == 0 ) break;
-            else if (strcmp(o,"exit") == 0 ) break;
+            printf("Note: If you want to go back to the menu immediately, type 'exit'. To logout now, type 'x'\n");
+
+            ch = _getch();
+
+            if (ch == 13) {
+                getUserAccounts(all);
+                getStudentData(r);
+                if(choice_student == 1 && column == 1 && all[accountIndex].add) addStudent(r);
+                else if (!all[accountIndex].add) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_student == 2 && column == 1 && all[accountIndex].update) update(r);
+                else if (!all[accountIndex].update) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_student == 3 && column == 1 && all[accountIndex].delete) deleteStudent(r);
+                else if (!all[accountIndex].delete) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_student == 4 && column == 1 && all[accountIndex].search) search(r);
+                else if (!all[accountIndex].search) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_account == 1 && column == 2 && all[accountIndex].createacc) createAcc(all);
+                else if (!all[accountIndex].createacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_account == 2 && column == 2 && all[accountIndex].manageacc) accountManagement(all);
+                else if (!all[accountIndex].manageacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_account == 3 && column == 2 && all[accountIndex].deleteacc) removeAccount(all);
+                else if (!all[accountIndex].deleteacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+                if(choice_account == 4 && column == 2 && all[accountIndex].showacc) {showAccount(all);getch();}
+                else if (!all[accountIndex].showacc) {system("cls");printf("You don't have permission to access this feature!\n");sleep(1);system("cls");}
+            } else if (ch == 72 && choice_student > 1) { 
+                choice_student--;
+                choice_account--;
+            } else if (ch == 80 && choice_student < 4) {
+                choice_student++;
+                choice_account++;
+            } else if (ch == 75) {
+                column = 1;
+            } else if (ch == 77) {
+                column = 2;
+            } else if (ch == 'x' || ch == 'X') {
+                break;
+            }
         }
+        system("cls");
+        printf("Exiting to menu...");
+        sleep(1);
     }
 }

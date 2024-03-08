@@ -1,4 +1,7 @@
-// 3/4/24: Added search students with filter options 
+// 3/4/24: Added search students with filter options
+// Need to add more student fields such as gmail and hometown 
+// Give the detail of the program
+// Remember to do edunext
 
 #include<stdio.h>
 #include<conio.h>
@@ -164,102 +167,94 @@ void createAcc(acc all[])
     char d[5],perm[5];
     int i,q,j;
     int c = 0;
+    char ch;
     do {
-        do{
-            printf("Number of new account: ");
-            scanf("%s",d);
-            if (strcmp(d,"exit") == 0) return;
-            if(!checkInput(d)) printf("Wrong input. Please retry!\n");
-        } while (!checkInput(d));
-        q = atoi(d);
-        for(j = 0;j < q;j++){
-            acc new;
-            while(c == 0){
-                c = 0;
-                do{
-                    printf("Username: ");
-                    scanf("%s",new.username);
-                } while(!checkInappropriateChar(new.username)); 
-                if (strcmp(new.username,"exit") == 0) return;
-                if (strchr(new.username,' ') != NULL) {printf("Username should not contain spaces\n");continue;}
-                for(i = 0;i < line;i++)
-                    if (strcmp(new.username,all[i].username) == 0){
-                        printf("Username Occupied. Please try again!\n");
-                        c++;
-                        break;
-                    }
-                if (c == 0) break;
-                else c = 0;
-            }
+        acc new;
+        while(c == 0){
+            c = 0;
             do{
-                printf("Password: ");
-                scanf("%s",new.password);
-                if (strcmp(new.password,"exit") == 0) return;
-            }while(!passwordValidate(new.password) || !checkInappropriateChar(new.password));
-            printf("-----------------Permission----------------\n");
-                printf("1.Add students(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.add = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.add = false;break;}
+                printf("Username: ");
+                scanf("%s",new.username);
+            } while(!checkInappropriateChar(new.username)); 
+            if (strcmp(new.username,"exit") == 0) return;
+            if (strchr(new.username,' ') != NULL) {printf("Username should not contain spaces\n");continue;}
+            for(i = 0;i < line;i++)
+                if (strcmp(new.username,all[i].username) == 0){
+                    printf("Username Occupied. Please try again!\n");
+                    c++;
+                    break;
                 }
-                printf("2.Update students(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.update = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.update = false;break;}
-                }
-                printf("3.Delete students(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.delete = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.delete = false;break;}
-                }
-                printf("4.Search students(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.search = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.search = false;break;}
-                }
-                printf("5.Create account(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.createacc = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.createacc = false;break;}
-                }
-                printf("6.Manage account(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.manageacc = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.manageacc = false;break;}
-                }
-                printf("7.Delete account(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.deleteacc = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.deleteacc = false;break;}
-                }
-                printf("8.Show accounts(Y/N): ");
-                while(scanf("%s",perm)){
-                    if (strcmp(perm,"exit") == 0) return;
-                    if (strcmp(perm,"Y") == 0) {new.showacc = true;break;}
-                    else if (strcmp(perm,"N") == 0) {new.showacc = false;break;}
-                }
-            fp = fopen("user.data","a");
-            fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",new.username,new.password,new.add,new.update,new.delete,new.search,new.createacc,new.manageacc,new.deleteacc,new.showacc);
-            fclose(fp);
-            system("cls");
-            printf("Create successfully!");
-            sleep(1);
-            system("cls");
+            if (c == 0) break;
+            else c = 0;
         }
-        printf("Do you want to continue creating account?(Y/N)\n");
-        while(scanf("%s",o)){
-            if (strcmp(o,"exit") == 0) return;
-            if (strcmp(o,"Y") == 0) break;
-            else if (strcmp(o,"N") == 0) break;
+        do{
+            printf("Password: ");
+            scanf("%s",new.password);
+            if (strcmp(new.password,"exit") == 0) return;
+        }while(!passwordValidate(new.password) || !checkInappropriateChar(new.password));
+        printf("-----------------Permission----------------\n");
+            printf("1.Add students(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.add = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.add = false;break;}
+            }
+            printf("2.Update students(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.update = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.update = false;break;}
+            }
+            printf("3.Delete students(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.delete = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.delete = false;break;}
+            }
+            printf("4.Search students(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.search = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.search = false;break;}
+            }
+            printf("5.Create account(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.createacc = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.createacc = false;break;}
+            }
+            printf("6.Manage account(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.manageacc = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.manageacc = false;break;}
+            }
+            printf("7.Delete account(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.deleteacc = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.deleteacc = false;break;}
+            }
+            printf("8.Show accounts(Y/N): ");
+            while(scanf("%s",perm)){
+                if (strcmp(perm,"exit") == 0) return;
+                if (strcmp(perm,"Y") == 0) {new.showacc = true;break;}
+                else if (strcmp(perm,"N") == 0) {new.showacc = false;break;}
+            }
+        fp = fopen("user.data","a");
+        fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",new.username,new.password,new.add,new.update,new.delete,new.search,new.createacc,new.manageacc,new.deleteacc,new.showacc);
+        fclose(fp);
+        system("cls");
+        printf("Create successfully!");
+        sleep(1);
+        system("cls");
+    printf("Do you want to continue creating account?(enter/escape)\n");
+    while(true){
+            ch = getch();
+            if (ch == 13) break;
+            else if (ch == 27) break;
         }
-    } while (strcmp(o,"Y") == 0);
+    } while (ch = 13);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
@@ -267,12 +262,13 @@ void createAcc(acc all[])
 
 void removeAccount(acc all[])
 {
+    char ch;
     int i,j;
+    getchar();
     char a[20][20],o[5];
     do{
         getUserAccounts(all);
         system("cls");
-        if (!(strcmp(o,"Y") == 0)) getchar();
         for(i = 0;i < line;i++){
             printf("%d. Username: %s\n",i+1,all[i].username);
         }
@@ -283,6 +279,7 @@ void removeAccount(acc all[])
             fgets(a[n],sizeof(a[n]),stdin);
             if (strcmp(a[n],"\n") == 0) break;
             a[n][strcspn(a[n],"\n")] = '\0';
+            if(strcmp(a[n],"exit") == 0) return;
             for(i = 0; i < strlen(a[n]);i++){
                 if (isalpha(a[n][i])!= 0) {cinput = true;break;}
             }
@@ -317,16 +314,14 @@ void removeAccount(acc all[])
             system("cls");
             printf("Delete successfully!\n");
             line-=n;
-            printf("Do you want to continue deleting?(Y/N)\n");
+            printf("Do you want to continue deleting?(enter/escape)\n");
             while(true){
-                scanf("%s",o);
-                if (strcmp(o,"exit") == 0) return;
-                if (strcmp(o,"Y") == 0) break;
-                else if (strcmp(o,"N") == 0) break;
+                ch = getch();
+                if (ch == 13) break;
+                else if (ch == 27) break;
             }
-            getchar();
         }
-    }while(strcmp(o,"Y") == 0);
+    }while(ch = 13);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
@@ -429,21 +424,20 @@ void accountManagement(acc all[])
     system("cls");
     char o[5];
     char a[50],b[50],c[50],d[20];
+    int count;
     int k = 1;
-    int dem = 0;
     int i,index;
     bool bol = false;
     while (true){
-        dem = 0;
-        printf("Username of the account: ");
+        for(i = 0;i < line;i++) {
+            printf("%d. %s\n",i+1,all[i]);
+        }
         do{
+            printf("Account index: ");
             scanf("%s",d);
-        } while(!checkInappropriateChar(d));
-        if (strcmp(d,"exit") == 0) return;
-        for(i = 0;i < line;i++) 
-            if (strcmp(d,all[i].username) == 0) {index = i;dem++;break;}
-        if (dem == 0) printf("Username not found!\n");
-        else break;
+            if (strcmp(d,"exit") == 0) return;
+        } while(!checkInput(d));
+        index = atoi(d)-1;
     }
     while(true){
         system("cls");
@@ -523,15 +517,16 @@ void accountManagement(acc all[])
             }
         }
         else if (strcmp(o,"4") == 0){
-            while (true){
-                dem = 0;
-                printf("Username of the account: ");
-                scanf("%s",d);
-                if (strcmp(d,"exit") == 0) return;
-                for(i = 0;i < line;i++) 
-                    if (strcmp(d,all[i].username) == 0) {index = i;dem++;break;}
-                if (dem == 0) printf("Username not found!\n");
-                else break;
+             while (true){
+                for(i = 0;i < line;i++) {
+                    printf("%d. %s\n",i+1,all[i]);
+                }
+                do{
+                    printf("Account index: ");
+                    scanf("%s",d);
+                    if (strcmp(d,"exit") == 0) return;
+                } while(!checkInput(d));
+                index = atoi(d)-1;
             }
         }
         else if (strcmp(o,"5") == 0){
@@ -664,9 +659,8 @@ bool isValidDate(int day, int month, int year) {
 
 void addStudent(sv r[])
 {
-    system("cls");
     int i,j;
-    char m[5],n[5],k[5],f[20],o[5];
+    char m[5],n[5],k[5],f[20],o[5],ch;
     sv a;
     int q;
     char c[5];
@@ -674,81 +668,74 @@ void addStudent(sv r[])
     int d = 1;
     bool bol = false;
     do{
-        do{
-            printf("Number of new students: ");
-            scanf("%s",c);
-            if (strcmp(c,"exit") == 0) return;
-            if(!checkInput(c)) printf("Wrong input. Please retry!\n");
-        } while (!checkInput(c));
-        q = atoi(c);
-        for(i = 0;i < q;i++){
-            while (d >= 1){
-                d = 0;
-                do {
-                    printf("Student ID: ");
-                    scanf("%s",a.sid);
-                }while(!checkInappropriateChar(a.sid));
-                if (strcmp(a.sid,"exit") == 0) return;
-                for(j = 0;j < l;j++) 
-                    if (strcmp(a.sid,r[j].sid) == 0) {printf("Occupied ID. Please try again!\n");d++;break;}
-            }
-            getchar();
-            do{
-                do{
-                    printf("Student name: ");
-                    fgets(a.name, sizeof(a.name), stdin);
-                    a.name[strcspn(a.name, "\n")] = '\0';
-                } while(!checkInappropriateChar(a.name));
-                if (strcmp(a.name,"exit") == 0) return;
-                if (strchr(a.name,' ') != NULL) break;
-                else printf("Wrong name format. Please retry!\n");
-            } while(true);
-            strlwr(a.name);
-            ucaseName(a.name);
-            do{
-                printf("Gender(male/female): ");
-                scanf("%s",a.gender);
-                if (strcmp(a.gender,"exit") == 0) return;
-                if (strcmp(a.gender,"male") == 0 || strcmp(a.gender,"female") == 0) break;
-                else printf("Male or female only!\n");
-            }while(true);
-            do{
-                printf("Date of birth(DD/MM/YY): ");
-                scanf("%s",a.date);
-                if (strcmp(a.date,"exit") == 0) return;
-                sscanf(a.date,"%[0-9]/%[0-9]/%[0-9]",m,n,k);
-                strcpy(f,m);
-                strcat(f,"/");
-                strcat(f,n);
-                strcat(f,"/");
-                strcat(f,k);
-                if (strcmp(a.date,f) == 0 && isValidDate(atoi(m),atoi(n),atoi(k))) break;
-                else printf("Invalid date. Please retry!\n");
-            } while(true);
-            do{
-                bol = true;
-                printf("Phone number: ");
-                scanf("%s",a.pnumber);
-                if (strcmp(a.pnumber,"exit") == 0) return;
-                if (strlen(a.pnumber) < 7 || strlen(a.pnumber) > 11) {printf("Phone number too long or too short!\n");bol = false;}
-                for(j = 0;j < l;j++) if (strcmp(a.pnumber,r[j].pnumber) == 0) {printf("Occupied phone number!\n");bol = false;break;}
-                if (!checkInput(a.pnumber)) bol = false;
-            }while (!bol);
-            fp = fopen("student.data","a");
-            fprintf(fp,"%s-%s-%s-%s-%s\n",a.sid,a.name,a.gender,a.date,a.pnumber);
-            fclose(fp);
-            system("cls");
-            printf("Added successfully!");
-            sleep(1);
-            system("cls");
+        system("cls");
+        while (d >= 1){
+            d = 0;
+            do {
+                printf("Student ID: ");
+                scanf("%s",a.sid);
+            }while(!checkInappropriateChar(a.sid));
+            if (strcmp(a.sid,"exit") == 0) return;
+            for(j = 0;j < l;j++) 
+                if (strcmp(a.sid,r[j].sid) == 0) {printf("Occupied ID. Please try again!\n");d++;break;}
         }
-        printf("Do you still want to continue?(Y/N)\n");
-        while(scanf("%s",o)){
-                if (strcmp(o,"exit") == 0) return;
-                if (strcmp(o,"Y") == 0) break;
-                else if (strcmp(o,"N") == 0) break;
-            }
-    } while(strcmp(o,"Y") == 0);
+        getchar();
+        do{
+            do{
+                printf("Student name: ");
+                fgets(a.name, sizeof(a.name), stdin);
+                a.name[strcspn(a.name, "\n")] = '\0';
+            } while(!checkInappropriateChar(a.name));
+            if (strcmp(a.name,"exit") == 0) return;
+            if (strchr(a.name,' ') != NULL) break;
+            else printf("Wrong name format. Please retry!\n");
+        } while(true);
+        strlwr(a.name);
+        ucaseName(a.name);
+        do{
+            printf("Gender(male/female): ");
+            scanf("%s",a.gender);
+            if (strcmp(a.gender,"exit") == 0) return;
+            if (strcmp(a.gender,"male") == 0 || strcmp(a.gender,"female") == 0) break;
+            else printf("Male or female only!\n");
+        }while(true);
+        do{
+            printf("Date of birth(DD/MM/YY): ");
+            scanf("%s",a.date);
+            if (strcmp(a.date,"exit") == 0) return;
+            sscanf(a.date,"%[0-9]/%[0-9]/%[0-9]",m,n,k);
+            strcpy(f,m);
+            strcat(f,"/");
+            strcat(f,n);
+            strcat(f,"/");
+            strcat(f,k);
+            if (strcmp(a.date,f) == 0 && isValidDate(atoi(m),atoi(n),atoi(k))) break;
+            else printf("Invalid date. Please retry!\n");
+        } while(true);
+        do{
+            bol = true;
+            printf("Phone number: ");
+            scanf("%s",a.pnumber);
+            if (strcmp(a.pnumber,"exit") == 0) return;
+            if (strlen(a.pnumber) < 8) {printf("Phone number too short!\n");bol = false;}
+            if (strlen(a.pnumber) > 11) {printf("Phone number too long!\n");bol = false;}
+            for(j = 0;j < l;j++) if (strcmp(a.pnumber,r[j].pnumber) == 0) {printf("Occupied phone number!\n");bol = false;break;}
+            if (!checkInput(a.pnumber)) bol = false;
+        }while (!bol);
+        fp = fopen("student.data","a");
+        fprintf(fp,"%s-%s-%s-%s-%s\n",a.sid,a.name,a.gender,a.date,a.pnumber);
+        fclose(fp);
+        system("cls");
+        printf("Added successfully!");
+        sleep(1);
+        system("cls");
+        printf("Do you still want to continue?(y/n)\n");
+        while(ch = getch()){
+            if (ch = 'y') break;
+            else if (ch = 'n') break;
+        }
+
+    } while(ch = 'y');
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
@@ -1045,10 +1032,12 @@ void deleteStudent(sv r[])
 {
     int i,j;
     char a[20][20],o[5];
+    char b[20][20];
+    char ch;
+    getchar();
     do{
         system("cls");
         getStudentData(r);
-        if (!(strcmp(o,"Y") == 0)) getchar();
         report(r);
         bool cinput = false;
         int n = 0;
@@ -1057,23 +1046,33 @@ void deleteStudent(sv r[])
             fgets(a[n],sizeof(a[n]),stdin);
             if (strcmp(a[n],"\n") == 0) break;
             a[n][strcspn(a[n],"\n")] = '\0';
+            if(strcmp(a[n],"exit") == 0) return;
             for(i = 0; i < strlen(a[n]);i++){
                 if (isalpha(a[n][i])!= 0) {cinput = true;break;}
             }
             n++;
         }
         if (!cinput){
+            int c = 0;
+            for(i = 0;i < n;i++){
+                char *token = strtok(a[i],",");
+                while (token != NULL){
+                    strcpy(b[c],token);
+                    c++;
+                    token = strtok(NULL,",");
+                }
+            }
             fp = fopen("student.data","w");
             for (i = 0; i < l; i++) {
                 bool delete_flag = false;
-                for (j = 0; j < n; j++) {
-                    char c[5],b[5];
-                    if(strchr(a[j],'-') != NULL){
-                        sscanf(a[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",b,c);
-                        if(i+1 >= min(atoi(b),atoi(c)) && i+1 <= max(atoi(b),atoi(c))) {delete_flag = true;break;}
+                for (j = 0; j < c; j++) {
+                    char c[5],d[5];
+                    if(strchr(b[j],'-') != NULL){
+                        sscanf(b[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",d,c);
+                        if(i+1 >= min(atoi(d),atoi(c)) && i+1 <= max(atoi(d),atoi(c))) {delete_flag = true;break;}
                     } 
                     else {
-                        if (i+1 == atoi(a[j])) {delete_flag = true;break;}
+                        if (i+1 == atoi(b[j])) {delete_flag = true;break;}
                     }
                 }
                 if (!delete_flag)
@@ -1085,21 +1084,20 @@ void deleteStudent(sv r[])
             system("cls");
             printf("Error deleting, please input the correct format!\n");
             sleep(1);
-            strcpy(o,"Y");
+            ch = 'y';
         }
         else{
             system("cls");
             printf("Delete successfully!\n");
             l-=n;
-            printf("Do you want to continue deleting?(Y/N)\n");
-            while(scanf("%s",o)){
-                if (strcmp(o,"exit") == 0) return;
-                if (strcmp(o,"Y") == 0) break;
-                else if (strcmp(o,"N") == 0) break;
+            printf("Do you want to continue deleting?(enter/escape)\n");
+            while(true){
+                ch = getch();
+                if (ch == 13) break;
+                else if (ch == 27) break;
             }
-            getchar();
         }
-    }while(strcmp(o,"Y") == 0);
+    }while(ch == 13);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
@@ -1122,9 +1120,10 @@ int main()
     char ch;
     while(true){
         getUserAccounts(all);
+        option=1;
         do {
 
-            system("cls");
+            //system("cls");
 
             printCentered("Welcome to the Student Management System!\n");
             printCentered("------------------------------------------\n");

@@ -1,7 +1,6 @@
 // 3/4/24: Added search students with filter options
 // Need to add more student fields such as gmail and hometown 
 // Give the detail of the program
-// Remember to do edunext
 
 #include<stdio.h>
 #include<conio.h>
@@ -20,6 +19,8 @@ struct student
     char gender[10];
     char date[30];
     char pnumber[20];
+    char gmail[30];
+    char address[50];
 };
 struct accounts
 {
@@ -155,7 +156,6 @@ void showAccount(acc all[])
         printf("6.Manage Account: %s\n", all[i].manageacc ? "Allowed" : "Denied");
         printf("7.Delete Account: %s\n", all[i].deleteacc ? "Allowed" : "Denied");
         printf("8.Show Account: %s\n", all[i].showacc ? "Allowed" : "Denied");
-        printf("\n");
     }
 }
 
@@ -248,8 +248,8 @@ void createAcc(acc all[])
         printf("Create successfully!");
         sleep(1);
         system("cls");
-    printf("Do you want to continue creating account?(enter/escape)\n");
-    while(true){
+        printf("Do you want to continue creating account?(enter/escape)\n");
+        while(true){
             ch = getch();
             if (ch == 13) break;
             else if (ch == 27) break;
@@ -260,17 +260,21 @@ void createAcc(acc all[])
     sleep(1);
 }
 
+
 void removeAccount(acc all[])
 {
-    char ch;
     int i,j;
-    getchar();
     char a[20][20],o[5];
+    char b[20][20];
+    char ch;
+    getchar();
     do{
-        getUserAccounts(all);
         system("cls");
-        for(i = 0;i < line;i++){
-            printf("%d. Username: %s\n",i+1,all[i].username);
+        getUserAccounts(all);
+        for(i = 0;i < line;i++) {
+        printf("-----------------%d----------------\n",i+1);
+        printf("Username: %s\n",all[i].username);
+        printf("Password: %s\n",all[i].password);
         }
         bool cinput = false;
         int n = 0;
@@ -286,34 +290,70 @@ void removeAccount(acc all[])
             n++;
         }
         if (!cinput){
-            fp = fopen("user.data","w");
+            int c = 0;
+            for(i = 0;i < n;i++){
+                char *token = strtok(a[i],",");
+                while (token != NULL){
+                    strcpy(b[c],token);
+                    c++;
+                    token = strtok(NULL,",");
+                }
+            }
+            printf("You are about to delete below accounts. Are you sure? (enter/escape)\n");
             for (i = 0; i < line; i++) {
                 bool delete_flag = false;
-                for (j = 0; j < n; j++) {
-                    char c[5],b[5];
-                    if(strchr(a[j],'-') != NULL){
-                        sscanf(a[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",b,c);
-                        if(i+1 >= min(atoi(b),atoi(c)) && i+1 <= max(atoi(b),atoi(c))) {delete_flag = true;break;}
+                for (j = 0; j < c; j++) {
+                    char c[5],d[5];
+                    if(strchr(b[j],'-') != NULL){
+                        sscanf(b[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",d,c);
+                        if(i+1 >= min(atoi(d),atoi(c)) && i+1 <= max(atoi(d),atoi(c))) {delete_flag = true;break;}
                     } 
                     else {
-                        if (i+1 == atoi(a[j])) {delete_flag = true;break;}
+                        if (i+1 == atoi(b[j])) {delete_flag = true;break;}
                     }
                 }
-                if (!delete_flag)
-                    fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",all[i].username,all[i].password,all[i].add,all[i].update,all[i].delete,all[i].search,all[i].createacc,all[i].manageacc,all[i].deleteacc,all[i].showacc);
+                if (delete_flag)
+                    fprintf(fp,"%s | %s\n",all[i].username,all[i].password);
             }
-            fclose(fp);
+            char opt;
+            while(true){
+                opt = getch();
+                if (opt == 13) break;
+                else if (opt == 27) break;
+            }
+            if (opt == 13){
+                fp = fopen("user.data","w");
+                for (i = 0; i < line; i++) {
+                    bool delete_flag = false;
+                    for (j = 0; j < c; j++) {
+                        char c[5],d[5];
+                        if(strchr(b[j],'-') != NULL){
+                            sscanf(b[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",d,c);
+                            if(i+1 >= min(atoi(d),atoi(c)) && i+1 <= max(atoi(d),atoi(c))) {delete_flag = true;break;}
+                        } 
+                        else {
+                            if (i+1 == atoi(b[j])) {delete_flag = true;break;}
+                        }
+                    }
+                    if (!delete_flag)
+                        fprintf(fp,"%s-%s-%i-%i-%i-%i-%i-%i-%i-%i\n",all[i].username,all[i].password,all[i].add,all[i].update,all[i].delete,all[i].search,all[i].createacc,all[i].manageacc,all[i].deleteacc,all[i].showacc);
+                }
+                fclose(fp);
+                system("cls");
+                printf("Delete successfully!\n");
+                sleep(1);
+                system("cls");
+                line-=n;
+            }
         }
         if (cinput) {
             system("cls");
             printf("Error deleting, please input the correct format!\n");
             sleep(1);
-            strcpy(o,"Y");
+            ch = 13;
         }
         else{
             system("cls");
-            printf("Delete successfully!\n");
-            line-=n;
             printf("Do you want to continue deleting?(enter/escape)\n");
             while(true){
                 ch = getch();
@@ -321,11 +361,12 @@ void removeAccount(acc all[])
                 else if (ch == 27) break;
             }
         }
-    }while(ch = 13);
+    }while(ch == 13);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
 }
+
 
 void login(acc all[])
 {
@@ -657,6 +698,15 @@ bool isValidDate(int day, int month, int year) {
     return true;
 }
 
+bool validateGmail(char c[])
+{
+    char name[20];
+    sscanf(c,"%[a-zA-Z0-9]@mail.com",name);
+    strcat(name,"@gmail.com");
+    if(strcmp(name,c) == 0) return true;
+    else return false;
+}
+
 void addStudent(sv r[])
 {
     int i,j;
@@ -712,30 +762,54 @@ void addStudent(sv r[])
             if (strcmp(a.date,f) == 0 && isValidDate(atoi(m),atoi(n),atoi(k))) break;
             else printf("Invalid date. Please retry!\n");
         } while(true);
+        char *vietnamProvinces[] = {
+        "An Giang", "Ba Ria Vung Tau", "Bac Giang", "Bac Kan", "Bac Lieu", "Bac Ninh", "Ben Tre", "Binh Dinh", "Binh Duong", "Binh Phuoc", 
+        "Binh Thuan", "Ca Mau", "Can Tho", "Cao Bang", "Da Nang", "Dak Lak", "Dak Nong", "Dien Bien", "Dong Nai", "Dong Thap", 
+        "Gia Lai", "Ha Giang", "Ha Nam", "Ha Noi", "Ha Tinh", "Hai Duong", "Hai Phong", "Hau Giang", "Hoa Binh", "Hung Yen", 
+        "Khanh Hoa", "Kien Giang", "Kon Tum", "Lai Chau", "Lam Dong", "Lang Son", "Lao Cai", "Long An", "Nam Dinh", "Nghe An", 
+        "Ninh Binh", "Ninh Thuan", "Phu Tho", "Phu Yen", "Quang Binh", "Quang Nam", "Quang Ngai", "Quang Ninh", "Quang Tri", 
+        "Soc Trang", "Son La", "Tay Ninh", "Thai Binh", "Thai Nguyen", "Thanh Hoa", "Thua Thien Hue", "Tien Giang", "TP. Ho Chi Minh", 
+        "Tra Vinh", "Tuyen Quang", "Vinh Long", "Vinh Phuc", "Yen Bai"};
+        printf("List of Vietnam Provinces:\n");
+        for(i = 0;i < 63;i++){
+            printf("%d.%s\n",i+1,vietnamProvinces[i]);
+        }
+        do{
+            printf("Place of birth: ");
+            scanf("%s",a.address);
+            if (atoi(a.address) <= 63 && atoi(a.address) >= 1) {strcpy(a.address,vietnamProvinces[atoi(a.address)-1]);break;}
+            else printf("Place of birth not found!\n");
+        }while (true);
         do{
             bol = true;
             printf("Phone number: ");
             scanf("%s",a.pnumber);
             if (strcmp(a.pnumber,"exit") == 0) return;
-            if (strlen(a.pnumber) < 8) {printf("Phone number too short!\n");bol = false;}
-            if (strlen(a.pnumber) > 11) {printf("Phone number too long!\n");bol = false;}
+            if (strlen(a.pnumber) < 8) {printf("Phone number too short (< 8)!\n");bol = false;}
+            if (strlen(a.pnumber) > 11) {printf("Phone number too long (> 11)!\n");bol = false;}
             for(j = 0;j < l;j++) if (strcmp(a.pnumber,r[j].pnumber) == 0) {printf("Occupied phone number!\n");bol = false;break;}
+            if (a.pnumber[0] != '0') {printf("Wrong phone number format. Please try again!\n");bol = false;}
             if (!checkInput(a.pnumber)) bol = false;
         }while (!bol);
+        do{
+            printf("Gmail: ");
+            scanf("%s",a.gmail);
+            if(!validateGmail(a.gmail)) printf("Wrong gmail format. Please try again!\n");
+        }while (!validateGmail(a.gmail));
         fp = fopen("student.data","a");
-        fprintf(fp,"%s-%s-%s-%s-%s\n",a.sid,a.name,a.gender,a.date,a.pnumber);
+        fprintf(fp,"%s-%s-%s-%s-%s-%s-%s\n",a.sid,a.name,a.gender,a.date,a.pnumber,a.gmail,a.address);
         fclose(fp);
         system("cls");
         printf("Added successfully!");
         sleep(1);
         system("cls");
-        printf("Do you still want to continue?(y/n)\n");
+        printf("Do you still want to continue?(enter/escape)\n");
         while(ch = getch()){
-            if (ch = 'y') break;
-            else if (ch = 'n') break;
+            if (ch == 13) break;
+            else if (ch = 27) break;
         }
 
-    } while(ch = 'y');
+    } while(ch == 13);
     system("cls");
     printf("Exiting to menu...");
     sleep(1);
@@ -743,7 +817,7 @@ void addStudent(sv r[])
 
 void stringProcessing1(char c[],sv r[], int l)
 {
-    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].sid,r[l].name,r[l].gender,r[l].date,r[l].pnumber);
+    sscanf(c,"%[^-]-%[^-]-%[^-]-%[^-]-%[^-]-%[^-]-%[^-\n]",r[l].sid,r[l].name,r[l].gender,r[l].date,r[l].pnumber,r[l].gmail,r[l].address);
 }
 
 void getStudentData(sv r[])
@@ -757,14 +831,14 @@ void getStudentData(sv r[])
         l++;
     }
     fclose(fp);
-    //printf("%s-%s-%s-%s",r[0].id,r[0].name,r[0].semester,r[0].coursename);
+    //printf("%s-%s-%s-%s-%s-%s-%s\n",r[0].sid,r[0].name,r[0].gender,r[0].date,r[0].pnumber,r[0].gmail,r[0].address);
 }
 
 void report(sv r[])
 {
     int i;
     for(i = 0; i < l; i++){
-        printf("%d | %s | %s | %s | %s | %s\n",i+1,r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber); 
+        printf("%d | %s | %s | %s | %s | %s | %s | %s\n",i+1,r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber,r[i].gmail,r[i].address); 
     }
 }
 
@@ -873,14 +947,24 @@ void search(sv r[])
             fgets(new.pnumber,sizeof(new.pnumber),stdin);
             new.pnumber[strcspn(new.pnumber,"\n")] = '\0';
             if (strcmp(new.pnumber,"exit") == 0) return;
+            printf("Gmail (Enter to skip): ");
+            fgets(new.gmail,sizeof(new.gmail),stdin);
+            new.gmail[strcspn(new.gmail,"\n")] = '\0';
+            if (strcmp(new.gmail,"exit") == 0) return;
+            printf("Place of birth (Enter to skip): ");
+            fgets(new.address,sizeof(new.address),stdin);
+            new.address[strcspn(new.address,"\n")] = '\0';
+            if (strcmp(new.address,"exit") == 0) return;
             int found = 0;
             for(i = 0; i < l; i++) {
                 if((new.sid[0] == '\0' || strstr(r[i].sid,new.sid) != NULL) &&
                 (new.name[0] == '\0' || strstr(r[i].name,new.name) != NULL) &&
                 (new.gender[0] == '\0' || strcmp(r[i].gender,new.gender) == 0) &&
                 (new.date[0] == '\0' || strstr(r[i].date,new.date) != NULL) &&
+                (new.gmail[0] == '\0' || strstr(r[i].gmail,new.gmail) != NULL) &&
+                (new.address[0] == '\0' || strstr(r[i].address,new.address) != NULL) &&
                 (new.pnumber[0] == '\0' || strstr(r[i].pnumber,new.pnumber) != NULL)) {
-                    printf("%s | %s | %s | %s | %s\n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber); 
+                    printf("%s | %s | %s | %s | %s | %s | %s \n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber, r[i].gmail, r[i].address); 
                     found++;
                 }
             }
@@ -901,6 +985,7 @@ void search(sv r[])
 void update(sv r[])
 {
     char a[50],m[10],b[10],d[10],f[20];
+    char gmail[20],address[30];
     int k;
     int i;
     char c[100];
@@ -932,13 +1017,15 @@ void update(sv r[])
             system("cls");
             while(true){
                 system("cls");
-                printf("%s | %s | %s | %s | %s\n",r[k].sid,r[k].name,r[k].gender,r[k].date,r[k].pnumber);
+                printf("%s | %s | %s | %s | %s | %s | %s\n",r[k].sid,r[k].name,r[k].gender,r[k].date,r[k].pnumber,r[k].gmail,r[k].address);
                 printf("1. Update ID\n");
                 printf("2. Update Name\n");
                 printf("3. Update Phone number\n");
                 printf("4. Update Date of birth\n");
                 printf("5. Update Gender\n");
-                printf("6. Save and back\n");
+                printf("6. Update Gmail\n");
+                printf("7. Update Place of birth\n");
+                printf("8. Save and back\n");
                 scanf("%s",o2);
                 if (strcmp(c,"exit") == 0) return;
                 if (strcmp(o2,"1") == 0) {
@@ -1005,9 +1092,38 @@ void update(sv r[])
                     strcpy(r[k].gender,a);
                 }
                 else if (strcmp(o2,"6") == 0){
+                    do{
+                        printf("Gmail: ");
+                        scanf("%s",gmail);
+                        if(!validateGmail(gmail)) printf("Wrong gmail format. Please try again!\n");
+                    }while (!validateGmail(gmail));
+                    strcpy(r[k].gmail,gmail);
+                }
+                else if (strcmp(o2,"7") == 0){
+                    char *vietnamProvinces[] = {
+                    "An Giang", "Ba Ria Vung Tau", "Bac Giang", "Bac Kan", "Bac Lieu", "Bac Ninh", "Ben Tre", "Binh Dinh", "Binh Duong", "Binh Phuoc", 
+                    "Binh Thuan", "Ca Mau", "Can Tho", "Cao Bang", "Da Nang", "Dak Lak", "Dak Nong", "Dien Bien", "Dong Nai", "Dong Thap", 
+                    "Gia Lai", "Ha Giang", "Ha Nam", "Ha Noi", "Ha Tinh", "Hai Duong", "Hai Phong", "Hau Giang", "Hoa Binh", "Hung Yen", 
+                    "Khanh Hoa", "Kien Giang", "Kon Tum", "Lai Chau", "Lam Dong", "Lang Son", "Lao Cai", "Long An", "Nam Dinh", "Nghe An", 
+                    "Ninh Binh", "Ninh Thuan", "Phu Tho", "Phu Yen", "Quang Binh", "Quang Nam", "Quang Ngai", "Quang Ninh", "Quang Tri", 
+                    "Soc Trang", "Son La", "Tay Ninh", "Thai Binh", "Thai Nguyen", "Thanh Hoa", "Thua Thien Hue", "Tien Giang", "TP. Ho Chi Minh", 
+                    "Tra Vinh", "Tuyen Quang", "Vinh Long", "Vinh Phuc", "Yen Bai"};
+                    printf("List of Vietnam Provinces:\n");
+                    for(i = 0;i < 63;i++){
+                        printf("%d.%s\n",i+1,vietnamProvinces[i]);
+                    }
+                    do{
+                        printf("Place of birth: ");
+                        scanf("%s",address);
+                        if (atoi(address) <= 63 && atoi(address) >= 1) {strcpy(address,vietnamProvinces[atoi(address)-1]);break;}
+                        else printf("Place of birth not found!\n");
+                    }while (true);
+                    strcpy(r[k].address,address);
+                }
+                else if (strcmp(o2,"8") == 0){
                     fp = fopen("student.data","w");
                     for(i = 0; i < l; i++){
-                        fprintf(fp,"%s-%s-%s-%s-%s\n",r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber);
+                        fprintf(fp,"%s-%s-%s-%s-%s-%s-%s\n",r[i].sid,r[i].name,r[i].gender,r[i].date,r[i].pnumber,r[i].gmail,r[i].address);
                     }
                     fclose(fp);
                     system("cls");
@@ -1062,7 +1178,7 @@ void deleteStudent(sv r[])
                     token = strtok(NULL,",");
                 }
             }
-            fp = fopen("student.data","w");
+            printf("You are about to delete below students. Are you sure? (enter/escape)\n");
             for (i = 0; i < l; i++) {
                 bool delete_flag = false;
                 for (j = 0; j < c; j++) {
@@ -1075,21 +1191,48 @@ void deleteStudent(sv r[])
                         if (i+1 == atoi(b[j])) {delete_flag = true;break;}
                     }
                 }
-                if (!delete_flag)
-                    fprintf(fp, "%s-%s-%s-%s-%s\n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber);
+                if (delete_flag)
+                    printf("%d | %s | %s | %s | %s | %s | %s | %s\n",i+1 , r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber, r[i].gmail,r[i].address);
             }
-            fclose(fp);
+            char opt;
+            while(true){
+                opt = getch();
+                if (opt == 13) break;
+                else if (opt == 27) break;
+            }
+            if (opt == 13){
+                fp = fopen("student.data","w");
+                for (i = 0; i < l; i++) {
+                    bool delete_flag = false;
+                    for (j = 0; j < c; j++) {
+                        char c[5],d[5];
+                        if(strchr(b[j],'-') != NULL){
+                            sscanf(b[j],"%[0-9a-zA-Z]-%[0-9a-zA-Z]",d,c);
+                            if(i+1 >= min(atoi(d),atoi(c)) && i+1 <= max(atoi(d),atoi(c))) {delete_flag = true;break;}
+                        } 
+                        else {
+                            if (i+1 == atoi(b[j])) {delete_flag = true;break;}
+                        }
+                    }
+                    if (!delete_flag)
+                        fprintf(fp, "%s-%s-%s-%s-%s-%s-%s\n", r[i].sid, r[i].name, r[i].gender, r[i].date, r[i].pnumber, r[i].gmail,r[i].address);
+                }
+                fclose(fp);
+                system("cls");
+                printf("Delete successfully!\n");
+                sleep(1);
+                system("cls");
+                l-=n;
+            }
         }
         if (cinput) {
             system("cls");
             printf("Error deleting, please input the correct format!\n");
             sleep(1);
-            ch = 'y';
+            ch = 13;
         }
         else{
             system("cls");
-            printf("Delete successfully!\n");
-            l-=n;
             printf("Do you want to continue deleting?(enter/escape)\n");
             while(true){
                 ch = getch();
@@ -1123,7 +1266,7 @@ int main()
         option=1;
         do {
 
-            //system("cls");
+            system("cls");
 
             printCentered("Welcome to the Student Management System!\n");
             printCentered("------------------------------------------\n");

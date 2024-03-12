@@ -313,7 +313,7 @@ void removeAccount(acc all[])
                     }
                 }
                 if (delete_flag)
-                    fprintf(fp,"%s | %s\n",all[i].username,all[i].password);
+                    printf("%s | %s\n",all[i].username,all[i].password);
             }
             char opt;
             while(true){
@@ -972,6 +972,7 @@ void search(sv r[])
             getch();
         }
         else if (strcmp(o,"6") == 0) {
+            system("cls");
             report(r);
             getch();
         }
@@ -1330,7 +1331,7 @@ int main()
             else if (choice_student == 4) printf("\t\tShow Account\n");
 
             printf("----------------------------------------\n");
-            printf("Note: If you want to go back to the menu immediately, type 'exit'. To logout now, type 'x'\n");
+            printf("Note: If you want to go back to the menu immediately, type 'exit'. To logout now, press escape\n");
 
             ch = _getch();
 
@@ -1363,7 +1364,7 @@ int main()
                 column = 1;
             } else if (ch == 77) {
                 column = 2;
-            } else if (ch == 'x' || ch == 'X') {
+            } else if (ch == 27 || ch == 27) {
                 break;
             }
         }

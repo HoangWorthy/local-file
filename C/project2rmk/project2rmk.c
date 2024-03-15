@@ -1,6 +1,4 @@
 // 3/4/24: Added search students with filter options
-// Need to add more student fields such as gmail and hometown 
-// Give the detail of the program
 
 #include<stdio.h>
 #include<conio.h>

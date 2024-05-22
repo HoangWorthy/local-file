@@ -8,8 +8,6 @@
 
 
 int main() {
-    char a[] = {"1"};
-    char b[5],c[5];
-    sscanf(a,"%[0-9]-%[0-9]",b,c);
-    printf("%s-%s",b,c);
+    float *p;
+    *p = 30;
 }
